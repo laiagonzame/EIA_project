@@ -1,6 +1,7 @@
 All files of the project must go here.
 
 
+- Main: Javi
 - Initial state: Cristina. Posicions aleatories o lattice. Input: densitat.
 -	Boundary conditions: Cristina. 
 -	Forces: Martí. Input posicions, output força
