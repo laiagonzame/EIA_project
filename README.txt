@@ -1,8 +1,8 @@
 All files of the project must go here.
 
 
-- Main: Javi
-- Initial state: Cristina. Posicions aleatories o lattice. Input: densitat.
+- Main: entre tots
+- Initial state: Javi. Posicions aleatories o lattice. Input: densitat.
 -	Boundary conditions: Cristina. 
 -	Forces: Martí. Input posicions, output força
 -	Integration: Pablo. LLegeix coord, vels i forces. Actualitza coord.
