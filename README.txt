@@ -10,6 +10,6 @@ All files of the project must go here.
 -	Visualization of results: Miquel. e  python. format pdf. eixos, llegenda ... Posicions, velocitats, g(r), energia, temperatura, desplaçament quadràtic mig.
 - Repository: Laia. 
 - Make: Laia. 
-- MPI: Miquel
+- MPI: cadascú paral·lelitza el seu codi.
 
 
