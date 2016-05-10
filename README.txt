@@ -6,10 +6,10 @@ All files of the project must go here.
 -	Boundary conditions: Cristina. 
 -	Forces: Martí. Input posicions, output força
 -	Integration: Pablo. LLegeix coord, vels i forces. Actualitza coord.
--	Statistics: Luís i Laia. Promitjos en funció del temps. Posicions, velocitats, g(r), energia, temperatura, desplaçament quadràtic mig.
+-	Statistics: Luís (g(r) i desplaçament quadràtic mig) i Laia (energia potencial i temperatura). Promitjos en funció del temps. Posicions, velocitats, g(r), energia, temperatura, desplaçament quadràtic mig.
 -	Visualization of results: Miquel. e  python. format pdf. eixos, llegenda ... Posicions, velocitats, g(r), energia, temperatura, desplaçament quadràtic mig.
 - Repository: Laia. 
-- Make: Laia. 
+- Make: ?. 
 - MPI: cadascú paral·lelitza el seu codi.
 
 
