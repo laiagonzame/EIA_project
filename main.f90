@@ -36,6 +36,7 @@ nf = 3 * M - 3 ! number of degrees of freedom
 
 ! Open files
 open(unit=2, file='../data/energy-temp.data', status='unknown')
+open(unit=3, file='../data/RDF.data', status='unknown')
 
 ! Temporal loop
 do i = 1, N
@@ -47,7 +48,13 @@ do i = 1, N
 
    ! Save temporal serie 
 
+   ! Compute RDF and average
+
 end do
 
+! Save RDF
+
 close(2)
+close(3)
+
 end program
