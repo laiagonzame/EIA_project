@@ -12,10 +12,10 @@ public
 
 contains
 
-subroutine compute_temperature(kbt ,vel, M, dt, mass)
+subroutine compute_temperature(kbt ,vel, M, dt)
 integer, intent(in) :: M
 real*8, dimension(3,M),intent(in) :: vel
-real*8, intent(in) :: dt, mass
+real*8, intent(in) :: dt
 real*8, intent(out) :: kbt
 integer :: i
 
@@ -25,7 +25,7 @@ do i=1,M
 ! 1. Falta dividir pel numero de graus de llibertat: al main se
 ! li diu nf ---> nf = 3*M-3 
 ! 2. Si treballem en unitats de massa no caldria multiplicar-la aqui
- kbt = kbt + mass*(vel(1,i)**2+vel(2,i)**2+vel(3,i)**2)/3.
+ kbt = kbt +(vel(1,i)**2+vel(2,i)**2+vel(3,i)**2)/3.
 
 end do
 
