@@ -57,7 +57,7 @@ contains
   do i=1,M
     Ri = r(:,i)
     do j=1,(i-1)    !todos los pares de atomos
-       Rj = r(:,j)       
+       Rj = r(:,j)       ! CUANDO i = j NO DA PROBLEMAS??
        Rij = Ri(:) - Rj(:)      !vector que une los dos atomos
        distance = sqrt(Rij(1)**2 + Rij(2)**2 + Rij(3)**2)    !distancia relativa
        indice = floor(distance/dr) + 1  !posicion en histograma
