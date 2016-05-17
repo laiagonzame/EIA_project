@@ -13,7 +13,7 @@ implicit none
 
 ! system parameters
 integer :: M, nf
-double precision :: boxL, mass, kBTref
+double precision :: boxL, mass, kBTref, rho
 double precision :: ecin, epot, temp
 ! Integration parameters
 integer :: i, j, N
@@ -25,7 +25,7 @@ parameter(M = 400, N = 100)
 parameter(mass = 4.)
 
 ! Defining dimensions
-allocate(r(3,M), v(3,M), accel(3,M), rho(P))
+allocate(r(3,M), v(3,M), accel(3,M))
 
 ! Init variables
 kBTref = 2.
