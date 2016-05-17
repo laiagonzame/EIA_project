@@ -54,10 +54,10 @@ contains
   integer :: i,j
   integer :: indice
   
-  do i=1,M
+  do i=2,M          !empezar con el par i=2 j=1. Evitar i=1 j=0
     Ri = r(:,i)
-    do j=1,(i-1)    !todos los pares de atomos
-       Rj = r(:,j)       ! CUANDO i = j NO DA PROBLEMAS??
+    do j=1,(i-1)    !bucle sobre todos los pares de atomos
+       Rj = r(:,j)
        Rij = Ri(:) - Rj(:)      !vector que une los dos atomos
        distance = sqrt(Rij(1)**2 + Rij(2)**2 + Rij(3)**2)    !distancia relativa
        indice = floor(distance/dr) + 1  !posicion en histograma
@@ -74,10 +74,19 @@ contains
   integer,intent(in) :: total_esp
   real,intent(in) :: dr
   real,dimension(total_esp),intent(inout) :: g  !salida g(r) normalizada
+  real :: vol, dr3, pi
   integer :: factor_normalizacion
   integer :: i
   
-  factor_normalizacion = sum(g(:))
+  pi = 3.14159265359
+  dr3 = dr*dr*dr
+  
+  do i=1, total_esp       !corregir con el volumen de los casquetes
+    vol = 4*pi*dr3*i**2   !4pi*r^2*dr = 4pi*(i*dr)^2*dr = 4pi*dr^3*i^2
+    g(i) = g(i)/vol
+  end do
+  
+  factor_normalizacion = sum(g(:)) !DUDA: ¿Hay que normalizar aqui o mejor lo quito?
   g(:) = g(:)/factor_normalizacion
   
   do i=1,total_esp
