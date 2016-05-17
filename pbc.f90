@@ -16,13 +16,13 @@ subroutine PBC(num_particulas,posicion,Lcaja)
 !o su imagen dentro de la caja
 
 integer,intent(in)::num_particulas
-real(8),dimension(num_particulas,3),intent(inout)::posicion
+real(8),dimension(3,num_particulas),intent(inout)::posicion
 integer,intent(in)::Lcaja
 integer::i,j
 
 
-do i=1,num_particulas
-  do j=1,3
+do j=1,num_particulas
+  do i=1,3
     If (posicion(i,j)>0) then
         If (posicioni(i,j)>Lcaja/2.) then
            posicion(i,j)=posicion(i,j)-Lcaja
