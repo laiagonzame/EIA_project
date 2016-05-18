@@ -35,7 +35,7 @@ double precision, dimension(:,:), allocatable :: r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
-parameter(M = 400, N = 100)
+parameter(M = 300, N = 400)
 parameter(mass = 4., sigma=1, epsil=1)
 
 ! Defining dimensions
@@ -52,8 +52,9 @@ boxL=40
 call inirandom(M,r,v,boxL,kBTref)
 
 ! Open files
-open(unit=2, file='data/energy-temp.data', status='unknown')
-! open(unit=3, file='../data/RDF.data', status='unknown')
+open(unit=2, file='data/energy.data', status='unknown')
+open(unit=3, file='data/temp.data', status='unknown')
+! open(unit=4, file='../data/RDF.data', status='unknown')
 
 call forces(M,r,F,boxL,sigma,epsil)
 
@@ -80,7 +81,8 @@ do i = 1, N
    call kinetic_energy(ecin, temp)
 
    ! Save temporal serie 
-   write(2,*) i*dt, temp, ecin
+   write(2,*) i*dt, temp
+   write(3,*) i*dt, ecin 
 
    ! Compute RDF and average
 
@@ -89,6 +91,7 @@ end do
 ! Save RDF
 
 close(2)
-!close(3)
+close(3)
+!close(4)
 
 end program
