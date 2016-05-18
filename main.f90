@@ -1,4 +1,12 @@
 program van_der_waals
+
+use temperature
+use initial
+use PeriodicBoundaryConditions
+use integrator
+use forces_routines
+use statistics
+
 implicit none
 ! N: number of time steps
 ! M: number of atoms
@@ -68,9 +76,10 @@ do i = 1, N
    ! Compute magnitudes
 
    call compute_temperature(temp, v, M, nf)
+   call kinetic_energy(ecin, temp)
 
    ! Save temporal serie 
-   write(*,*) i*dt, temp
+   write(*,*) i*dt, temp, ecin
 
    ! Compute RDF and average
 
