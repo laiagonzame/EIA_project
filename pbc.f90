@@ -17,7 +17,7 @@ subroutine PBC(num_particulas,posicion,Lcaja)
 
 integer,intent(in)::num_particulas
 real(8),dimension(3,num_particulas),intent(inout)::posicion
-integer,intent(in)::Lcaja
+real(8),intent(in)::Lcaja
 integer::i,j
 
 
