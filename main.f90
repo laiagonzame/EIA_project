@@ -18,17 +18,17 @@ implicit none
 ! system parameters
 integer :: M, nf
 double precision :: boxL, mass, kBTref
-double precision :: ecin, epot, temp
+double precision :: sigma, epsil
 ! Integration parameters
 integer :: i, j, N
 double precision :: dt
 ! General variables
 double precision, dimension(:,:), allocatable :: r, v, F,F_t
 ! Ouputs
-double precision :: temp
+double precision :: ecin, epot, temp
 ! defining parameters
 parameter(M = 400, N = 100)
-parameter(mass = 4., sigma=1,epsil=1)
+parameter(mass = 4., sigma=1, epsil=1)
 
 ! Defining dimensions
 allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))

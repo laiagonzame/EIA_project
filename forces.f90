@@ -1,4 +1,4 @@
-module forces
+module forces_routines
 implicit none
 
 contains
@@ -6,18 +6,18 @@ contains
 subroutine forces(M,r,F,boxlength,sigma,epsil)
 
 integer, intent(in) :: M
-real(8), dimension(3,M), intent(in) :: r
-real(8), dimension(3,M), intent(out) :: F
-real(8), intent(in) :: boxlength, sigma, epsil
-real(8), dimension(3) :: rij 
-real(8) :: rcut, rijl, dist2, sigmar, rc2
+double precision, dimension(3,M), intent(in) :: r
+double precision, dimension(3,M), intent(out) :: F
+double precision, intent(in) :: boxlength, sigma, epsil
+double precision, dimension(3) :: rij 
+double precision :: rcut, rijl, dist2, sigmar, rc2, force
 integer :: i, j, l
 
 rcut=boxlength
 rc2=rcut*rcut
 
 do i=1,M
-   do l=1,l
+   do l=1,3
       F(l,i) = 0.0
    enddo
 enddo
@@ -46,5 +46,6 @@ do i=1,M-1
 
 enddo
 
-
 endsubroutine
+
+end module

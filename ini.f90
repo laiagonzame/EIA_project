@@ -15,14 +15,14 @@ contains
 
 !**************************************************************
 subroutine inirandom(N,pos,vel,box,T)
-!Subrutina que inicializa las particulas en la caja de manera
+! Subrutina que inicializa las particulas en la caja de manera
 ! aleatoria en posicion y velocidad
 
 integer :: N,i,j,seed
-real*8,dimension(3,N) ::pos,vel
-real*8 :: box,aux,T
+double precision, dimension(3,N) :: pos, vel
+double precision :: box,aux,T
 
-!Inicializacion de los numeros aleatorios
+! Inicializacion de los numeros aleatorios
 seed=1221
 call random_seed(seed)
 
@@ -39,4 +39,4 @@ enddo
 
 end subroutine
 
-!***************************************************************
+end module
