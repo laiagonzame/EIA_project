@@ -45,7 +45,7 @@ allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))
 kBTref = 2.
 dt = 1. / 500
 nf = 3 * M - 3 ! number of degrees of freedom 
-
+boxL=40
 ! Initial configuration+velocity
 
 call inirandom(M,r,v,boxL,kBTref)
@@ -88,6 +88,6 @@ end do
 ! Save RDF
 
 close(2)
-close(3)
+!close(3)
 
 end program
