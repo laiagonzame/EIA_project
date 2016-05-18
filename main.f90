@@ -24,6 +24,8 @@ integer :: i, j, N
 double precision :: dt
 ! General variables
 double precision, dimension(:,:), allocatable :: r, v, F,F_t
+! Ouputs
+double precision :: temp
 ! defining parameters
 parameter(M = 400, N = 100)
 parameter(mass = 4., sigma=1,epsil=1)
@@ -41,35 +43,34 @@ nf = 3 * M - 3 ! number of degrees of freedom
 call inirandom(M,r,v,boxL,kBTref)
 
 ! Open files
-open(unit=2, file='../data/energy-temp.data', status='unknown')
-open(unit=3, file='../data/RDF.data', status='unknown')
+open(unit=2, file='data/energy-temp.data', status='unknown')
+! open(unit=3, file='../data/RDF.data', status='unknown')
 
 call forces(M,r,F,boxL,sigma,epsil)
 
 ! Temporal loop
-do i = 2, N
+do i = 1, N
 
-   
-
-
-call Verlet_Coord(r,F,v,M,dt,mass)
+   call Verlet_Coord(r,F,v,M,dt,mass)
 
    ! Apply PBC
 
-call PBC(M,r,boxL)
+   call PBC(M,r,boxL)
 
    ! Calculate new Forces
 
-call forces(M,r,F_t,boxL,sigma,epsil)
+   call forces(M,r,F_t,boxL,sigma,epsil)
 
-call Verlet_Vel(F,F_t,v,M,dt,mass)
+   call Verlet_Vel(F,F_t,v,M,dt,mass)
 
-
-  F=F_t
+   F = F_t
 
    ! Compute magnitudes
 
+   call compute_temperature(temp, v, M, nf)
+
    ! Save temporal serie 
+   write(*,*) i*dt, temp
 
    ! Compute RDF and average
 
