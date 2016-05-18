@@ -1,5 +1,5 @@
 GFORTRAN module version '10' created from pbc.f90
-MD5:6ecfff10440c0d3fe4ccdb5748b823aa -- If you edit this, you'll get what you deserve.
+MD5:f7d39accc5d4a711612d3aad1a5d95b1 -- If you edit this, you'll get what you deserve.
 
 (() () () () () () () () () () () () () () () () () () () () () () () ()
 () () ())
@@ -28,7 +28,7 @@ INTEGER 4 0 0 0 INTEGER ()) 0 '1') (CONSTANT (INTEGER 4 0 0 0 INTEGER ())
 0 '3') (CONSTANT (INTEGER 4 0 0 0 INTEGER ()) 0 '1') (VARIABLE (INTEGER
 4 0 0 0 INTEGER ()) 0 4 ())) 0 () () () 0 0)
 6 'lcaja' '' '' 3 ((VARIABLE IN UNKNOWN-PROC UNKNOWN UNKNOWN 0 0 DUMMY)
-(INTEGER 4 0 0 0 INTEGER ()) 0 0 () () 0 () () () 0 0)
+(REAL 8 0 0 0 REAL ()) 0 0 () () 0 () () () 0 0)
 )
 
 ('pbc' 0 2 'periodicboundaryconditions' 0 7)

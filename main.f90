@@ -46,6 +46,7 @@ kBTref = 2.
 dt = 1. / 500
 nf = 3 * M - 3 ! number of degrees of freedom 
 boxL=40
+
 ! Initial configuration+velocity
 
 call inirandom(M,r,v,boxL,kBTref)
@@ -79,7 +80,7 @@ do i = 1, N
    call kinetic_energy(ecin, temp)
 
    ! Save temporal serie 
-   write(*,*) i*dt, temp, ecin
+   write(2,*) i*dt, temp, ecin
 
    ! Compute RDF and average
 

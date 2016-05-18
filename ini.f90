@@ -30,7 +30,7 @@ do j=1,N
    do i=1,3
       ! Posiciones
       call random_number(aux)
-      pos(i,j)=(2.*aux-1.)*box
+      pos(i,j)=(2d0*aux-1d0)*box/2d0
       ! Velocidades
       call random_number(aux)
       vel(i,j)=(2.*aux-1.)*dsqrt(T) 
