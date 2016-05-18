@@ -13,7 +13,7 @@ double precision, dimension(3) :: rij
 double precision :: rcut, rijl, dist2, sigmar, rc2, force
 integer :: i, j, l
 
-rcut=boxlength
+rcut=0.5*boxlength
 rc2=rcut*rcut
 
 do i=1,M
