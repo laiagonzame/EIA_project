@@ -12,35 +12,32 @@ public
 
 contains
 
-subroutine compute_temperature(kbt ,vel, M, nf, dt)
+
+subroutine compute_temperature(kbt, vel, M, nf)
 integer, intent(in) :: M, nf
-real*8, dimension(3,M),intent(in) :: vel
-real*8, intent(in) :: dt
-real*8, intent(out) :: kbt
+double precision, dimension(3,M),intent(in) :: vel
+double precision, intent(out) :: kbt
 integer :: i
 
-kbt=0.
+kbt=0d0
  
 do i=1,M
+
 ! 1. Falta dividir pel numero de graus de llibertat: al main se
 ! li diu nf ---> nf = 3*M-3 
 ! 2. Si treballem en unitats de massa no caldria multiplicar-la aqui
- kbt = kbt +(vel(1,i)**2+vel(2,i)**2+vel(3,i)**2)/nf;
+ kbt = kbt +(vel(1,i)**2+vel(2,i)**2+vel(3,i)**2)/dfloat(nf)
 
 end do
-
-
 
 end subroutine
 
 subroutine kinetic_energy(kine, kbt)
-real*8, intent(in) :: kbt
-real*8, intent(out) :: kine
-
-kine=3.* kb t/ 2.
+double precision, intent(in) :: kbt
+double precision, intent(out) :: kine
+ 
+kine = 3.* kbt/ 2.
 
 end subroutine
-
-
 
 end module

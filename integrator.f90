@@ -16,7 +16,7 @@ public
 
 contains
 
-subroutine Verlet_integrator(coord,frz,vel,N,ts,m)
+subroutine Verlet_Coord(coord,frz,vel,N,ts,m)
  real*8, dimension(3,N),intent(in) :: frz,vel
  real*8, dimension(3,N),intent(inout) :: coord
  integer, intent(in) :: N
@@ -35,4 +35,33 @@ subroutine Verlet_integrator(coord,frz,vel,N,ts,m)
 
 
 end subroutine
+
+subroutine Verlet_Vel(frz,frzt,vel,N,ts,m)
+ real*8, dimension(3,N),intent(in) :: frz,frzt
+ real*8, dimension(3,N),intent(inout) :: vel
+ integer, intent(in):: N
+ real*8,intent(in)::ts,m
+ integer:: i
+! Calculo de la velocidad a t+ts utilizando el integrador Velocity Verlet
+
+
+ do i=1,N
+
+
+   vel(1,i)=vel(1,i)+(frz(1,i)+frzt(1,i))*ts/(2*m)
+
+   vel(2,i)=vel(2,i)+(frz(2,i)+frzt(2,i))*ts/(2*m)
+
+   vel(3,i)=vel(3,i)+(frz(3,i)+frzt(3,i))*ts/(2*m)
+
+
+end do
+
+
+end subroutine
+
+
+
+
+
 end module
