@@ -5,7 +5,7 @@ public
  
   !!! declarate_radial_dist: declara las variables para la g(r)
   !   Entrada:
-  !     Distancia cutoff del potencial. La g(r) se mide entre 0 y 10*cutoff
+  !     Tamaño L de la caja. La g(r) se mide entre 0 y 0.4*L
   !     Numero de espacios (n_esp) en los que discretizar la g(r)
   !   Salida:
   !     histograma (g) con n_esp huecos iniciados a cero
@@ -28,14 +28,14 @@ public
     
 contains
 
-  subroutine declarate_radial_dist(cutoff,total_esp,dr,g)
-  real,intent(in) :: cutoff
+  subroutine declarate_radial_dist(L,total_esp,dr,g)
+  real,intent(in) :: L
   integer,intent(in) :: total_esp
   real,intent(out) :: dr
   real,dimension(total_esp),intent(out) :: g
   real :: rmax
   
-  rmax = 10*cutoff
+  rmax = 0.4*L
   dr = rmax/total_esp
   g(:) = 0
     
@@ -74,20 +74,18 @@ contains
   integer,intent(in) :: total_esp
   real,intent(in) :: dr
   real,dimension(total_esp),intent(inout) :: g  !salida g(r) normalizada
-  real :: vol, dr3, pi
+  real :: vol, pi, R, f
   integer :: factor_normalizacion
   integer :: i
   
   pi = 3.14159265359
-  dr3 = dr*dr*dr
+  f = 4*pi/3.
   
   do i=1, total_esp       !corregir con el volumen de los casquetes
-    vol = 4*pi*dr3*i**2   !4pi*r^2*dr = 4pi*(i*dr)^2*dr = 4pi*dr^3*i^2
+    R = (i-1)*dr
+    vol = f*( (R + dr)**3 - R**3 )
     g(i) = g(i)/vol
   end do
-  
-  factor_normalizacion = sum(g(:)) !DUDA: ¿Hay que normalizar aqui o mejor lo quito?
-  g(:) = g(:)/factor_normalizacion
   
   do i=1,total_esp
     write(channel,*) dr*i, g(i)  
