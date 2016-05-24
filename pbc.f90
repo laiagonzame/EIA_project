@@ -5,8 +5,6 @@ public
 !Modulo para implementar condiciones periodicas de contorno
 !en la dinamica molecular
 
-
-
 contains
 
 subroutine PBC(num_particulas,posicion,Lcaja)
@@ -15,10 +13,10 @@ subroutine PBC(num_particulas,posicion,Lcaja)
 !Devuelve como output las matriz con las coordenadas de las particulas 
 !o su imagen dentro de la caja
 
-integer,intent(in)::num_particulas
-real(8),dimension(3,num_particulas),intent(inout)::posicion
-real(8),intent(in)::Lcaja
-integer::i,j
+integer, intent(in) :: num_particulas
+double precision, dimension(3,num_particulas), intent(inout) :: posicion
+double precision, intent(in) :: Lcaja
+integer :: i,j
 
 
 do j=1,num_particulas

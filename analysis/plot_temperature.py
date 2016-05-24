@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # TODO check the outputs files and cd to the data folder
 # TODO check time and temperature units
 # TODO check where we are saving figures
-t, temp, ecin = np.loadtxt('../data/energy-temp.data').T
+t, temp = np.loadtxt('../data/temp.data').T
 
 plt.figure()
 plt.plot(t, temp)

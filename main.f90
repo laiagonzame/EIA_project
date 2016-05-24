@@ -26,7 +26,7 @@ implicit none
 ! system parameters
 integer :: M, nf
 double precision :: boxL, mass, kBTref
-double precision :: sigma, epsil
+double precision :: sigma, epsil, utime
 ! Integration parameters
 integer :: i, j, N
 double precision :: dt
@@ -35,17 +35,18 @@ double precision, dimension(:,:), allocatable :: r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
-parameter(M = 300, N = 400)
-parameter(mass = 4., sigma=1, epsil=1)
+parameter(M = 300, N = 500)
+parameter(mass = 1., sigma=1, epsil=1)
 
 ! Defining dimensions
 allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))
 
 ! Init variables
 kBTref = 2.
-dt = 1. / 500
+boxL=10d0 / sigma
+utime = dsqrt(mass * sigma**2 / epsil) ! unit of time in LJ units
+dt = 1. / 400 / utime
 nf = 3 * M - 3 ! number of degrees of freedom 
-boxL=40
 
 ! Initial configuration+velocity
 
