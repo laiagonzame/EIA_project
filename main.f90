@@ -57,7 +57,7 @@ open(unit=2, file='data/energy.data', status='unknown')
 open(unit=3, file='data/temp.data', status='unknown')
 ! open(unit=4, file='../data/RDF.data', status='unknown')
 
-call forces(M,r,F,boxL,sigma,epsil)
+call forces(M,r,F,boxL,sigma,epsil,epot)
 
 ! Temporal loop
 do i = 1, N
@@ -70,7 +70,7 @@ do i = 1, N
 
    ! Calculate new Forces
 
-   call forces(M,r,F_t,boxL,sigma,epsil)
+   call forces(M,r,F_t,boxL,sigma,epsil,epot)
 
    call Verlet_Vel(F,F_t,v,M,dt,mass)
 
@@ -83,7 +83,7 @@ do i = 1, N
 
    ! Save temporal serie 
    write(2,*) i*dt, temp
-   write(3,*) i*dt, ecin 
+   write(3,*) i*dt, ecin, epot 
 
    ! Compute RDF and average
 
