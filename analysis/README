@@ -1,0 +1,4 @@
+Instruccions per executar els programes de visualitzacio
+
+1. obrir ipython fent: ipython (enter)
+2. correr els programes: run nom_del_programa.py
