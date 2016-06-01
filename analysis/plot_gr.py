@@ -1,10 +1,13 @@
 import numpy as np
-import scipy.integrate as quad
-import matplotlib
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
-# Plot g(r) and save the figure
+# compile RDF file into fortran, and create a module
+get_ipython().system('f2py3 -c ../statistics.f90 -m statistics')
+
+# import module
+import statistics as stat
+
+stat.declarate_radial_dist(L,total_esp,dr,g)
 
 # import data
 r, gr = np.loadtxt("../data/gr.data").T
