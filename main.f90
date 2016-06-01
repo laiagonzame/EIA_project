@@ -35,7 +35,7 @@ double precision, dimension(:,:), allocatable :: r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
-parameter(M = 300, N = 500)
+parameter(M = 343, N = 1000)
 parameter(mass = 1., sigma=1, epsil=1)
 
 ! Defining dimensions
@@ -45,7 +45,7 @@ allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))
 kBTref = 2.
 boxL=10d0 / sigma
 utime = dsqrt(mass * sigma**2 / epsil) ! unit of time in LJ units
-dt = 1. / 400 / utime
+dt = 1. / 1000 / utime
 nf = 3 * M - 3 ! number of degrees of freedom 
 
 ! Initial configuration+velocity
@@ -57,7 +57,8 @@ open(unit=2, file='data/energy.data', status='unknown')
 open(unit=3, file='data/temp.data', status='unknown')
 ! open(unit=4, file='../data/RDF.data', status='unknown')
 
-call forces(M,r,F,boxL,sigma,epsil)
+call PBC(M,r,boxL)
+call forces(M,r,F,boxL,sigma,epsil,epot)
 
 ! Temporal loop
 do i = 1, N
@@ -70,7 +71,7 @@ do i = 1, N
 
    ! Calculate new Forces
 
-   call forces(M,r,F_t,boxL,sigma,epsil)
+   call forces(M,r,F_t,boxL,sigma,epsil,epot)
 
    call Verlet_Vel(F,F_t,v,M,dt,mass)
 
@@ -82,13 +83,12 @@ do i = 1, N
    call kinetic_energy(ecin, temp)
 
    ! Save temporal serie 
-   write(2,*) i*dt, temp
-   write(3,*) i*dt, ecin 
+   write(2,*) i*dt, ecin, epot 
+   write(3,*) i*dt, temp
 
    ! Compute RDF and average
 
 end do
-
 ! Save RDF
 
 close(2)

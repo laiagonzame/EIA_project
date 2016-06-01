@@ -3,20 +3,21 @@ implicit none
 
 contains
 
-subroutine forces(M,r,F,boxlength,sigma,epsil)
+subroutine forces(M,r,F,boxlength,sigma,epsil,epot)
 
 integer, intent(in) :: M
 double precision, dimension(3,M), intent(in) :: r
 double precision, dimension(3,M), intent(out) :: F
 double precision, intent(in) :: boxlength, sigma, epsil
 double precision, dimension(3) :: rij 
-double precision :: rcut, rijl, dist2, sigmar, rc2, force
+double precision :: rcut, rijl, dist2, sigmar, rc2, force,epot
 integer :: i, j, l
 
-rcut=sigma 
+rcut=3.*sigma 
 rc2=rcut*rcut
 
 F = 0d0
+epot = 0d0
 
 do i=1,M-1
    do j=i+1,M
@@ -33,6 +34,7 @@ do i=1,M-1
             F(l,i) = F(l,i) - force*rij(l)
             F(l,j) = F(l,j) + force*rij(l)
          enddo
+         epot=epot+4d0*epsil*(sigmar**(2.)-sigmar)
       endif
    enddo   
 enddo

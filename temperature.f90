@@ -27,6 +27,9 @@ end do
 
 end subroutine
 
+
+
+
 subroutine kinetic_energy(kine, kbt)
 double precision, intent(in) :: kbt
 double precision, intent(out) :: kine
