@@ -1,0 +1,16 @@
+Lista de "Tareas/Ideas" comentadas hoy en clase (01/07/2016)
+	-Añadir comparación del desplazamiento de las particulas con el parametro sigma (Pablo)
+	-Benchmarck del proyecto. Código en serie. (Miquel)
+	-Makefile (Cris)
+	-Output con posiciones y velocidades despues de termalizar. Un print cada 10 steps, aproximadamente. (Laia)
+	-Inicialización del sistema con posiciones aleatorias (Javi)
+	-Acabar de implementar la g(r). (Luis)
+
+Ideas o sugerencias a debatir sobre algunos de los puntos a implementar/corregir:
+	-En el Makefile habra: 
+				1)Compilación
+				2)Compilación mirando los tiempos de ejecución. 
+				3)Ejecutar estadísticas
+				4)Limpiar ficheros (outputs)
+	-Print de las posiciones: Se podría hacer que el print de las posiciones se haga en formato XYZ compatible con el programa VMD (Hay un ejemplo en la subrutina output del código TestPBC.f90).
+
