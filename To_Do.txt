@@ -1,4 +1,4 @@
-Lista de "Tareas/Ideas" comentadas hoy en clase (01/07/2016)
+Lista de "Tareas/Ideas" comentadas hoy en clase (01/06/2016)
 	-Añadir comparación del desplazamiento de las particulas con el parametro sigma (Pablo)
 	-Benchmarck del proyecto. Código en serie. (Miquel)
 	-Makefile (Cris)
