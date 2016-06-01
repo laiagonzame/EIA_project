@@ -21,15 +21,8 @@ integer :: i,j
 
 do j=1,num_particulas
   do i=1,3
-    If (posicion(i,j)>0) then
-        If (posicion(i,j)>Lcaja/2.) then
-           posicion(i,j)=posicion(i,j)-Lcaja
-        endif
-    else
-       If (posicion(i,j)<-Lcaja/2.) then
-          posicion(i,j)=posicion(i,j)+Lcaja
-       endif
-    endif
+    
+       posicion(i,j)=posicion(i,j)-Lcaja*nint(posicion(i,j)/Lcaja)
   enddo
 enddo
 

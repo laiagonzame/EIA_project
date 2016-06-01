@@ -13,7 +13,7 @@ double precision, dimension(3) :: rij
 double precision :: rcut, rijl, dist2, sigmar, rc2, force,epot
 integer :: i, j, l
 
-rcut=sigma 
+rcut=3.*sigma 
 rc2=rcut*rcut
 
 F = 0d0
@@ -34,7 +34,7 @@ do i=1,M-1
             F(l,i) = F(l,i) - force*rij(l)
             F(l,j) = F(l,j) + force*rij(l)
          enddo
-         epot=epot+4d0*epsil*(sigmar**(2d2)-sigmar)
+         epot=epot+4d0*epsil*(sigmar**(2.)-sigmar)
       endif
    enddo   
 enddo

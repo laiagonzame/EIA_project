@@ -45,15 +45,16 @@ do while (cont<N+1)
       if (lattice(x,y,z).eq.0) then
       lattice(x,y,z)=1
       pos(:,cont) = (/x, y, z/) * box / dfloat(lat)
+      
+      call random_number(aux)
+      vel(1,cont)= (2.*aux-1.)*dsqrt(T)
+      call random_number(aux)
+      vel(2,cont)= (2.*aux-1.)*dsqrt(T)
+      call random_number(aux)
+      vel(3,cont)= (2.*aux-1.)*dsqrt(T)
       cont=cont+1
       end if
-      ! Posiciones
       
-      
-      ! Velocidades
-      call random_number(aux)
-      vel(:,cont)= (2.*aux-1.)*dsqrt(T) 
-   
 enddo
 pos_cm = sum(pos, dim=2) / N
 vel_cm = sum(vel, dim=2) / N

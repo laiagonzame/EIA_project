@@ -35,7 +35,7 @@ double precision, dimension(:,:), allocatable :: r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
-parameter(M = 343, N = 100)
+parameter(M = 343, N = 1000)
 parameter(mass = 1., sigma=1, epsil=1)
 
 ! Defining dimensions
@@ -45,7 +45,7 @@ allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))
 kBTref = 2.
 boxL=10d0 / sigma
 utime = dsqrt(mass * sigma**2 / epsil) ! unit of time in LJ units
-dt = 1. / 200 / utime
+dt = 1. / 1000 / utime
 nf = 3 * M - 3 ! number of degrees of freedom 
 
 ! Initial configuration+velocity
