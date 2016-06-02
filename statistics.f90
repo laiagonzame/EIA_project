@@ -33,11 +33,11 @@ public
 contains
 
   subroutine declarate_radial_dist(L,total_esp,dr,g)
-  real,intent(in) :: L
+  real*8,intent(in) :: L
   integer,intent(in) :: total_esp
-  real,intent(out) :: dr
-  real,dimension(total_esp),intent(out) :: g
-  real :: rmax
+  real*8,intent(out) :: dr
+  real*8,dimension(total_esp),intent(out) :: g
+  real*8 :: rmax
   
   rmax = 0.5*L
   dr = rmax/total_esp
@@ -48,18 +48,20 @@ contains
   subroutine accumulate_radial_dist(M,L,r,total_esp,dr,g)
   ! Datos de entrada y salida
   integer,intent(in) :: M
-  real,intent(in) :: L
-  real,dimension(3,M),intent(in) :: r
+  real*8,intent(in) :: L
+  real*8,dimension(3,M),intent(in) :: r
   integer,intent(in) :: total_esp
-  real,intent(in) :: dr
-  real,dimension(total_esp),intent(inout) :: g  !salida g(r) (estadistica acumulada)
+  real*8,intent(in) :: dr
+  real*8,intent(out) :: g(total_esp)  !salida g(r) (estadistica acumulada)
 
   ! Variables de calculo
-  real,dimension(3) :: Ri, Rj, Rij
-  real :: distance
+  real*8,dimension(3) :: Ri, Rj, Rij
+  real*8 :: distance
   integer :: i,j
   integer :: indice
   
+  g = 0
+
   do i=2,M          !empezar con el par i=2 j=1. Evitar i=1 j=0
     Ri = r(:,i)
     do j=1,(i-1)    !bucle sobre todos los pares de atomos
