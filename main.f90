@@ -21,10 +21,10 @@ implicit none
 ! F: Force Matrix
 ! sigma: sigma parameter of lennard jones potencial
 ! epsil: epsilon parameter of lennard jones potencial
-
+! nhis: number of edges on g(r) histogram
 
 ! system parameters
-integer :: M, nf
+integer :: M, nf, nhis
 double precision :: boxL, mass, kBTref
 double precision :: sigma, epsil, utime
 ! Integration parameters
@@ -35,7 +35,7 @@ double precision, dimension(:,:), allocatable :: r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
-parameter(M = 343, N = 1000)
+parameter(M = 500, N = 1000, nhis = 400)
 parameter(mass = 1., sigma=1, epsil=1)
 
 ! Defining dimensions
@@ -45,17 +45,23 @@ allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))
 kBTref = 2.
 boxL=10d0 / sigma
 utime = dsqrt(mass * sigma**2 / epsil) ! unit of time in LJ units
-dt = 1. / 1000 / utime
+dt = 1. / 300 / utime
 nf = 3 * M - 3 ! number of degrees of freedom 
-
-! Initial configuration+velocity
-
-call inirandom(M,r,v,boxL,kBTref)
 
 ! Open files
 open(unit=2, file='data/energy.data', status='unknown')
 open(unit=3, file='data/temp.data', status='unknown')
 ! open(unit=4, file='../data/RDF.data', status='unknown')
+open(unit=5, file='data/params.data', status='unknown')
+
+! save parameters
+write(5,*) boxL, nhis, M, sigma, epsil, mass
+close(5)
+
+! Initial configuration+velocity
+
+call inirandom(M,r,v,boxL,kBTref)
+
 
 call PBC(M,r,boxL)
 call forces(M,r,F,boxL,sigma,epsil,epot)
