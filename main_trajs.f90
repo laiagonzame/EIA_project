@@ -73,7 +73,7 @@ call forces(M,r,F,boxL,sigma,epsil,epot)
 ! Temporal loop
 do i = 1, N
 
-   call Verlet_Coord(r,F,v,M,dt,mass)
+   call Verlet_Coord(r,F,v,M,dt,mass,boxL)
    
    !write trajectories
    If (i*dt>tterm .AND. mod(i,stepwrite) ==  0) then
