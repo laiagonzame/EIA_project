@@ -53,15 +53,15 @@ dt = 1. / 300 / utime
 nf = 3 * M - 3 ! number of degrees of freedom 
 
 ! Open files
-open(unit=5, file='data/params.data', status='unknown')
-open(unit=6, file='data/posicions.data', status='unknown')
-open(unit=7, file='data/velocitats.data', status='unknown')
+open(unit=10, file='data/params.data', status='unknown')
+open(unit=11, file='data/posicions.data', status='unknown')
+open(unit=12, file='data/velocitats.data', status='unknown')
 open(unit=20, file='data/traj_vmd.data', status='unknown')
 
 ! save parameters
-write(5,*) boxL, nhis, M, sigma, epsil, mass, dt
-close(5)
-write (*,*) dt
+write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, stepwrite
+close(10)
+
 ! Initial configuration+velocity
 
 call inirandom(M,r,v,boxL,kBTref)
@@ -86,12 +86,12 @@ do i = 1, N
    call Verlet_Vel(F,F_t,v,M,dt,mass)
    
    !write trajectories
-   If (i*dt>tterm .AND. mod(i,stepwrite) ==  0) then
-       write (*,*) i,dt,i*dt
+   If (i*dt > tterm .AND. mod(i,stepwrite) ==  0) then
+       !write (*,*) i,dt,i*dt
        call output(M,i,dt,r)
        do j = 1, M
-          Write(6,*) r(1,j), r(2,j), r(3,j)
-          Write(7,*) v(1,j), v(2,j), v(3,j)
+          write(11,*) r(1,j), r(2,j), r(3,j)
+          write(12,*) v(1,j), v(2,j), v(3,j)
        end do
    endif
 
