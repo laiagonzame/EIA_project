@@ -74,16 +74,6 @@ call forces(M,r,F,boxL,sigma,epsil,epot)
 do i = 1, N
 
    call Verlet_Coord(r,F,v,M,dt,mass,boxL)
-   
-   !write trajectories
-   If (i*dt>tterm .AND. mod(i,stepwrite) ==  0) then
-       write (*,*) i,dt,i*dt
-       call output(M,i,dt,r)
-       do j = 1, M
-          Write(6,*) r(1,j), r(2,j), r(3,j)
-          Write(7,*) v(1,j), v(2,j), v(3,j)
-       end do
-   endif
 
    ! Apply PBC
 
@@ -94,6 +84,16 @@ do i = 1, N
    call forces(M,r,F_t,boxL,sigma,epsil,epot)
 
    call Verlet_Vel(F,F_t,v,M,dt,mass)
+   
+   !write trajectories
+   If (i*dt>tterm .AND. mod(i,stepwrite) ==  0) then
+       write (*,*) i,dt,i*dt
+       call output(M,i,dt,r)
+       do j = 1, M
+          Write(6,*) r(1,j), r(2,j), r(3,j)
+          Write(7,*) v(1,j), v(2,j), v(3,j)
+       end do
+   endif
 
    F = F_t
 

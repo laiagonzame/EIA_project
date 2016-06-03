@@ -1,7 +1,12 @@
 module statistics
 implicit none
 public
-  !! Rutinas de estadisticas: g(r)
+
+!! Rutinas de analisis estadistico sobre un archivo con las trayectorias
+
+contains
+
+  !! DISTRIBUCION RADIAL g(r)
  
   !!! declarate_radial_dist: declara las variables para la g(r)
   !   Entrada:
@@ -29,8 +34,6 @@ public
   !     histograma (g)
 
   !! Cómo calcular la g(r): llamar a la declaración, bucle sobre accumulate para distintos snapshots y, finalmente, compute
-    
-contains
 
   subroutine declarate_radial_dist(L,total_esp,dr,g)
   real*8,intent(in) :: L
@@ -100,6 +103,48 @@ contains
     g(i) = g(i)/vol
   end do
     
+  end subroutine
+  
+  !! DESPLAZAMIENTO CUADRATICO MEDIO
+  
+  !!! desp_cuad_medio: Calcula el desplazamiento cuadratico medio de una configuracion
+  !                    respecto a otra
+  !   Entrada:
+  !     numero de atomos (M)
+  !     configuracion de referencia (pos0). Posiciones en el tiempo de referencia T0
+  !     configuracion actual (pos). Posiciones en el tiempo actual T
+  !   Salida:
+  !     dcm: desplazamiento cuadratico medio
+  
+  !!  Cómo calcular el DCM: Guardar la config a tiempo T0 en pos0. Leer posiciones en un tiempo, pos, calcular el dcm
+  !   y escribir en un archivo el tiempo (T-T0) y el dcm
+  
+  !Aviso a Miquel y Laia: Para calcular el DCM hay que tener en cuenta la diferencia de tiempos T-T0.
+  !Yo creo que lo mas comodo seria incluir en el archivo de trayectorias el instante de tiempo de cada configuracion.
+  !En este modulo, estoy suponiendo que ese dato no está en el archivo, y que Miquel lo debe calcular en el main
+  !de statistics.py. Avisadme si se cambia el archivo de la trayectoria incluyendo el dato del tiempo,
+  !para que yo actualice mi subrutina
+  
+  !Aviso para Cris: Esta rutina no tiene en cuenta las salidas de la caja.
+  !El DCM se tiene que calcular restando las posiciones reales respecto a las de referencia,
+  !no las posiciones aplicadas las PBC. ¿Hay ahora mismo algun seguimiento de la posicion real de las particulas?
+  
+  subroutine desp_cuad_medio(M,pos0,pos,dcm)
+  integer,intent(in) :: M
+  real,dimension(3,M),intent(in) :: pos0, pos
+  real,intent(out) :: dcm
+  real,dimension(3) :: r
+  integer :: i
+  
+  dcm = 0
+  
+  do i=1, M
+    r(:) = pos(:,i) - pos0(:,i)
+    dcm = dcm + r(1)*r(1)+r(2)*r(2)+r(3)*r(3)
+  end do
+  
+  dcm = dcm / M
+  
   end subroutine
   
 end module
