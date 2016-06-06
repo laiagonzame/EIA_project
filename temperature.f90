@@ -30,11 +30,12 @@ end subroutine
 
 
 
-subroutine kinetic_energy(kine, kbt)
+subroutine kinetic_energy(kine, kbt, M, nf)
+integer, intent(in) :: M, nf
 double precision, intent(in) :: kbt
 double precision, intent(out) :: kine
  
-kine = 3d0 * kbt / 2d0
+kine = 3d0 * kbt / 2d0*dfloat(nf)
 
 end subroutine
 
