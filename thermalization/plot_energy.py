@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 # TODO check the outputs files and cd to the data folder
 # TODO check time and energy units
 # TODO check where we are saving figures
-t, ecin, epot = np.loadtxt('../data/energy.data').T
+t, ecin, epot = np.loadtxt('energy.data').T
 
+ecin *= 400
 plt.figure()
 plt.plot(t, ecin, label='Ec')
 plt.plot(t, epot, label='Ep')

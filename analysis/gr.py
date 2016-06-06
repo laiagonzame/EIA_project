@@ -16,8 +16,8 @@ M = 400
 rho = M / boxL**3
 
 # test
-r = np.random.randn(3,M,N)
-r = np.float32(r)
+r = np.array(np.random.randn(3,M,N), order='FORTRAN')
+#r = np.array(np.random.randn(3,M,N), order='C')
 
 # TODO import trajectory
 
