@@ -139,6 +139,7 @@ contains
   subroutine desp_cuad_medio(M,pos0,pos,dcm)
   integer,intent(in) :: M
   real,dimension(3,M),intent(in) :: pos0, pos
+  !f2py depend(M) :: pos0, pos
   real,intent(out) :: dcm
   real,dimension(3) :: r
   integer :: i
