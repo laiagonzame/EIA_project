@@ -50,48 +50,55 @@ contains
   
   subroutine accumulate_radial_dist(M,L,r,total_esp,dr,g)
   ! Datos de entrada y salida
-  integer,intent(in) :: M
-  real*8,intent(in) :: L
-  real*8,dimension(3,M),intent(in) :: r
-  integer,intent(in) :: total_esp
-  real*8,intent(in) :: dr
-  real*8,intent(out) :: g(total_esp)  !salida g(r) (estadistica acumulada)
+  integer, intent(in) :: total_esp
+  integer, intent(in) :: M
+  real*8, intent(in) :: L, dr
+  !f2py intent(in) :: M, L, total_esp, dr
+  real*8,intent(in) :: r(3,M)
+  !f2py intent(in) :: r
+  !f2py depend(M) :: r
+  real*8, intent(out) :: g(total_esp)  !salida g(r) (estadistica acumulada)
+  !f2py intent(out) :: g
 
   ! Variables de calculo
   real*8,dimension(3) :: Ri, Rj, Rij
   real*8 :: distance
   integer :: i,j
   integer :: indice
-  
+
+
   g = 0
 
   do i=2,M          !empezar con el par i=2 j=1. Evitar i=1 j=0
     Ri = r(:,i)
     do j=1,(i-1)    !bucle sobre todos los pares de atomos
 
-       Rj(:) = r(:,j)
+       Rj = r(:,j)
        
-       Rij(:) = Ri(:) - Rj(:)   !vector que los une
+       Rij = Ri - Rj   !vector que los une
 
-       Rij(:) = Rij(:) - L*nint(Rij(:)/L)  !imagen minima
+       Rij = Rij - L*nint(Rij/L)  !imagen minima
 
        distance = sqrt(Rij(1)*Rij(1) + Rij(2)*Rij(2) + Rij(3)*Rij(3))    !distancia relativa
        indice = floor(distance/dr) + 1  !posicion en histograma
        if (indice <= total_esp) then
-          g(indice) = g(indice) + 1  ! Si distance<r_max, la g(r) suma 1
+          g(indice) = g(indice) + 2  ! Si distance<r_max, la g(r) suma 1
        end if
     end do
   end do
   
   end subroutine
   
-  subroutine compute_radial_dist(total_esp, dr, n_acc, density, g)
-  integer,intent(in) :: total_esp
-  real,intent(in) :: dr
+  subroutine compute_radial_dist(total_esp, dr, n_acc, density, M, g, gout)
+  integer,intent(in) :: total_esp, M
+  real*8,intent(in) :: dr
   integer,intent(in) :: n_acc                   !numero de acumulaciones (normalizacion)
-  real,intent(in) :: density                    !densidad (normalizacion)
-  real,dimension(total_esp),intent(inout) :: g  !salida g(r) normalizada
-  real :: vol, pi, R, f
+  real*8,intent(in) :: density                    !densidad (normalizacion)
+  real*8, intent(in) :: g(total_esp)  !salida g(r) normalizada
+  !f2py depend(total_esp) :: g
+  real*8,intent(out) :: gout(total_esp)  !salida g(r) normalizada
+  !f2py depend(total_esp) :: gout
+  real*8 :: vol, pi, R, f
   integer :: i
   
   pi = 3.14159265359
@@ -100,7 +107,7 @@ contains
   do i=1, total_esp       !corregir con el volumen de los casquetes
     R = (i-1)*dr
     vol = f*( (R + dr)**3 - R**3 )
-    g(i) = g(i)/vol
+    gout(i) = g(i)/(M * vol)
   end do
     
   end subroutine
