@@ -57,6 +57,7 @@ stepwrite_count = 0 ! number of snapshots
 open(unit=10, file='data/params.data', status='unknown')
 open(unit=11, file='data/posicions.data', status='unknown')
 open(unit=12, file='data/velocitats.data', status='unknown')
+open(unit=13, file='data/ener_potencial.data', status='unknown')
 open(unit=20, file='data/traj_vmd.data', status='unknown')
 
 ! save parameters
@@ -83,13 +84,14 @@ do i = 1, N
 
    call Verlet_Vel(F,F_t,v,M,dt,mass)
    
-   !write trajectories
+   !write trajectories and potencial energy
    If (i*dt > tterm .AND. mod(i,stepwrite) ==  0) then
       stepwrite_count = stepwrite_count + 1
       call output(M,i,dt,r)
       do j = 1, M
          write(11,*) r(1,j), r(2,j), r(3,j)
          write(12,*) v(1,j), v(2,j), v(3,j)
+         write(13,*) epot
       end do
    endif
 
@@ -103,6 +105,7 @@ write(10,*) stepwrite_count
 close(10)
 close(11)
 close(12)
+close(13)
 close(20)
 
 end program
