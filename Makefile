@@ -34,11 +34,11 @@ forces.o : forces.f90
 write_vmd.o : write_vmd.f90
 	gfortran -c write_vmd.f90 -o write_vmd.o
 
-##link : Link de  tots els moduls del programa de dinamica amb el main,genera l'executable amb el nom de van_der_walls
+##link : Link de  tots els moduls del programa de dinamica amb el main,genera l'executable amb el nom de van_der_waals
 .PHONY : link
 link:
-	gfortran main.o ini.o pbc.o forces.o integrator.o write_vmd.o -o van_der_walls 
-	@echo "L'executable s'anomena van_der_walls"
+	gfortran main.o ini.o pbc.o forces.o integrator.o write_vmd.o -o van_der_waals 
+	@echo "L'executable s'anomena van_der_waals"
 
 
 #Compilacio per veure els temps
@@ -72,15 +72,15 @@ forces_time :
 write_vmd_time :
 	gfortran -pg -c write_vmd.f90 -o write_vmd.o
 
-##link_time : Link de  tots els moduls del programa de dinamica amb el main,genera l'executable amb el nom de van_der_walls
+##link_time : Link de  tots els moduls del programa de dinamica amb el main,genera l'executable amb el nom de van_der_waals
 .PHONY : link_time
 link_time:
-	gfortran -pg main.o ini.o pbc.o forces.o integrator.o write_vmd.o -o van_der_walls 
-	@echo "L'executable s'anomena van_der_walls"
+	gfortran -pg main.o ini.o pbc.o forces.o integrator.o write_vmd.o -o van_der_waals 
+	@echo "L'executable s'anomena van_der_waals"
 	@echo "Cal executar el codi i cridar \"make time\" per tal de veure els temps"
 .PHONY : time
 time :
-	gprof van_der_walls > time.out
+	gprof van_der_waals > time.out
 	@echo "temps a time.out"
  
 #Compilacio del programa que calcula les estadistiques
