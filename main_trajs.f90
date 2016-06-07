@@ -38,9 +38,9 @@ double precision, dimension(:,:), allocatable :: r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
-parameter(M = 400, N = 1000, nhis = 400)
+parameter(M = 500, N = 2000, nhis = 400)
 parameter(mass = 1., sigma=1, epsil=1)
-parameter(tterm = 0, stepwrite=100)
+parameter(tterm = 0.5, stepwrite=50)
 
 ! Defining dimensions
 allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))
@@ -60,12 +60,11 @@ open(unit=12, file='data/velocitats.data', status='unknown')
 open(unit=20, file='data/traj_vmd.data', status='unknown')
 
 ! save parameters
-write(10,*) boxL, nhis, M, sigma, epsil, mass, dt
-
+write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, kBTref, tterm, stepwrite
 
 ! Initial configuration+velocity
 
-call inicubic(N,r,v,boxL,kBTref)
+call inicubic(M,r,v,boxL,kBTref)
 
 call PBC(M,r,boxL)
 call forces(M,r,F,boxL,sigma,epsil,epot)
