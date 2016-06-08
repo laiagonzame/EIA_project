@@ -13,9 +13,10 @@ public
 contains
 
 
-subroutine compute_temperature(kbt, vel, M, nf)
-integer, intent(in) :: M, nf
+subroutine compute_temperature(kbt, vel, M)
+integer, intent(in) :: M
 double precision, dimension(3,M), intent(in) :: vel
+!f2py depend(M) :: vel
 double precision, intent(out) :: kbt
 integer :: i
 
@@ -27,15 +28,13 @@ end do
 
 end subroutine
 
-
-
-
 subroutine kinetic_energy(kine, kbt, M, nf)
 integer, intent(in) :: M, nf
 double precision, intent(in) :: kbt
 double precision, intent(out) :: kine
  
 kine = 3d0 * kbt / 2d0*dfloat(nf)
+
 
 end subroutine
 

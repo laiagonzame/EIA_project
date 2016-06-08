@@ -37,9 +37,9 @@ real*8, dimension(3) :: dr
 
 
 do i=1,N
-   dr=coord(:,i)+vel(:,i)*ts+(ts**2)*frz(:,i)/(2*m)
+   dr=vel(:,i)*ts+(ts**2)*frz(:,i)/(2*m)
    call  Check_properdisplacement(dr,L)
-   coord(:,i)=dr
+   coord(:,i)=dr+coord(:,i)
 end do
 
 end subroutine

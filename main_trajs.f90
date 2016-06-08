@@ -27,7 +27,7 @@ implicit none
 ! stepwrite: cada quants steps de temps escrivim
 
 ! system parameters
-integer :: M, nf, nhis, stepwrite
+integer :: M, nf, nhis, stepwrite, stepwrite_count
 double precision :: boxL, mass, kBTref, tterm
 double precision :: sigma, epsil, utime
 ! Integration parameters
@@ -38,9 +38,9 @@ double precision, dimension(:,:), allocatable :: r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
-parameter(M = 500, N = 4000, nhis = 400)
+parameter(M = 500, N = 2000, nhis = 400)
 parameter(mass = 1., sigma=1, epsil=1)
-parameter(tterm = 4, stepwrite=10)
+parameter(tterm = 0.5, stepwrite=50)
 
 ! Defining dimensions
 allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))
@@ -51,28 +51,27 @@ boxL=10d0 / sigma
 utime = dsqrt(mass * sigma**2 / epsil) ! unit of time in LJ units
 dt = 1. / 300 / utime
 nf = 3 * M - 3 ! number of degrees of freedom 
+stepwrite_count = 0 ! number of snapshots
 
 ! Open files
 open(unit=10, file='data/params.data', status='unknown')
 open(unit=11, file='data/posicions.data', status='unknown')
 open(unit=12, file='data/velocitats.data', status='unknown')
+open(unit=13, file='data/ener_potencial.data', status='unknown')
 open(unit=20, file='data/traj_vmd.data', status='unknown')
 
 ! save parameters
-write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, stepwrite
-close(10)
+write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, kBTref, tterm, stepwrite
 
 ! Initial configuration+velocity
 
-call inirandom(M,r,v,boxL,kBTref)
-
+call inicubic(M,r,v,boxL,kBTref)
 
 call PBC(M,r,boxL)
 call forces(M,r,F,boxL,sigma,epsil,epot)
 
 ! Temporal loop
 do i = 1, N
-
    call Verlet_Coord(r,F,v,M,dt,mass,boxL)
 
    ! Apply PBC
@@ -85,23 +84,28 @@ do i = 1, N
 
    call Verlet_Vel(F,F_t,v,M,dt,mass)
    
-   !write trajectories
+   !write trajectories and potencial energy
    If (i*dt > tterm .AND. mod(i,stepwrite) ==  0) then
-       !write (*,*) i,dt,i*dt
-       call output(M,i,dt,r)
-       do j = 1, M
-          write(11,*) r(1,j), r(2,j), r(3,j)
-          write(12,*) v(1,j), v(2,j), v(3,j)
-       end do
+      stepwrite_count = stepwrite_count + 1
+      call output(M,i,dt,r)
+      do j = 1, M
+         write(11,*) r(1,j), r(2,j), r(3,j)
+         write(12,*) v(1,j), v(2,j), v(3,j)
+         write(13,*) epot
+      end do
    endif
 
    F = F_t
 
 end do
 
-close(5)
-close(6)
-close(7)
+! save number of snapshots
+write(10,*) stepwrite_count
+
+close(10)
+close(11)
+close(12)
+close(13)
 close(20)
 
 end program
