@@ -23,7 +23,7 @@ integer :: i
 kbt=0d0
  
 do i=1,M
-   kbt = kbt + (vel(1,i)**2+vel(2,i)**2+vel(3,i)**2)/dfloat(nf)
+   kbt = kbt + vel(1,i)**2+vel(2,i)**2+vel(3,i)**2
 end do
 
 end subroutine
@@ -34,7 +34,7 @@ integer, intent(in) :: M, nf
 double precision, intent(in) :: kbt
 double precision, intent(out) :: kine
  
-kine = 3d0 * kbt / 2d0*dfloat(nf)
+kine = 3d0 * kbt / (2d0*dfloat(nf))
 
 end subroutine
 
