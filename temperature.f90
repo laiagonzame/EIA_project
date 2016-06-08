@@ -28,7 +28,7 @@ end do
 
 end subroutine
 
-<<<<<<< HEAD
+
 subroutine kinetic_energy(kine, kbt, M, nf)
 integer, intent(in) :: M, nf
 double precision, intent(in) :: kbt
