@@ -34,7 +34,7 @@ double precision :: sigma, epsil, utime
 integer :: i, j, N
 double precision :: dt
 ! General variables
-double precision, dimension(:,:), allocatable :: r, v, F,F_t
+double precision, dimension(:,:), allocatable :: r, real_r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
@@ -43,7 +43,7 @@ parameter(mass = 1., sigma=1, epsil=1)
 parameter(tterm = 0.5, stepwrite=50)
 
 ! Defining dimensions
-allocate(r(3,M), v(3,M), F(3,M),F_t(3,M))
+allocate(r(3,M),real_r(3,M), v(3,M), F(3,M),F_t(3,M))
 
 ! Init variables
 kBTref = 2.
@@ -57,7 +57,8 @@ stepwrite_count = 0 ! number of snapshots
 open(unit=10, file='data/params.data', status='unknown')
 open(unit=11, file='data/posicions.data', status='unknown')
 open(unit=12, file='data/velocitats.data', status='unknown')
-open(unit=13, file='data/ener_potencial.data', status='unknown')
+open(unit=13, file='data/posicions_reals.data' status='unknown')
+open(unit=14, file='data/ener_potencial.data', status='unknown')
 open(unit=20, file='data/traj_vmd.data', status='unknown')
 
 ! save parameters
@@ -66,6 +67,7 @@ write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, kBTref, tterm, stepwrite
 ! Initial configuration+velocity
 
 call inicubic(M,r,v,boxL,kBTref)
+real_r = r
 
 call PBC(M,r,boxL)
 call forces(M,r,F,boxL,sigma,epsil,epot)
@@ -73,7 +75,8 @@ call forces(M,r,F,boxL,sigma,epsil,epot)
 ! Temporal loop
 do i = 1, N
    call Verlet_Coord(r,F,v,M,dt,mass,boxL)
-
+   call Verlet_Coord(real_r,F,v,M,dt,mass,boxL)
+   
    ! Apply PBC
 
    call PBC(M,r,boxL)
@@ -91,8 +94,9 @@ do i = 1, N
       do j = 1, M
          write(11,*) r(1,j), r(2,j), r(3,j)
          write(12,*) v(1,j), v(2,j), v(3,j)
+         write(13,*) real_r(i,j), real_r(2,j), real_r(3,j)
       end do
-      write(13,*) epot
+      write(14,*) epot
    endif
 
    F = F_t
@@ -106,6 +110,7 @@ close(10)
 close(11)
 close(12)
 close(13)
+close(14)
 close(20)
 
 end program
