@@ -78,10 +78,16 @@ if (taskid .eq. MASTER) then
       call MPI_RECV(Fij(:,indx_ppw(i):indx_ppw(i+1)-1), 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, stat, ierror)
       call MPI_RECV(epot_vec(indx_ppw(i):indx_ppw(i+1)-1), 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, stat, ierror)
    end do
+   
+   ! -----
+   do i = 1, pairs
+      F(:, vec_pairs(1,i)) = F(:, vec_pairs(1,i)) + Fij(:,i) 
+      F(:, vec_pairs(2,i)) = F(:, vec_pairs(2,i)) - Fij(:,i) 
+   end do
 
    ! ----- MASTER to WORKERS -----
    do i = 1, numproc-1
-      call MPI_ISEND(Fij, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
+      call MPI_ISEND(F, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
       call MPI_ISEND(epot_vec, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
    end do
 
@@ -91,7 +97,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
 ! ---- all WORKERS recive ---
 if (taskid .ne. MASTER) then
-   call MPI_RECV(Fij, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
+   call MPI_RECV(F, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
    call MPI_RECV(epot_vec, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
 end if
 
