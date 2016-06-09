@@ -22,7 +22,7 @@ rho = M / boxL**3
 t = tterm + dt * stepwrite * np.arange(N)
 
 # import trajectory
-r = np.loadtxt('../data/posicions.data').T
+r = np.loadtxt('../data/posicions_reals.data').T
 r = np.reshape(r.T, (N, M, 3))
 r0 = r[0,:,:]
 
