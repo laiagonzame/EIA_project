@@ -91,8 +91,8 @@ do i = 1, N
       do j = 1, M
          write(11,*) r(1,j), r(2,j), r(3,j)
          write(12,*) v(1,j), v(2,j), v(3,j)
-         write(13,*) epot
       end do
+      write(13,*) epot
    endif
 
    F = F_t
