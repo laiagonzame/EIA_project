@@ -1,0 +1,3 @@
+mpif90 -c ini.f90 pbc.f90 integrator_para.f90 forces.f90 statistics.f90 temperature.f90 write_vmd.f90 main_trajs.f90
+mpif90 ini.o pbc.o integrator_para.o forces.o statistics.o temperature.o write_vmd.o main_trajs.o -Wall -fbounds-check -o van_der_waals
+echo executable file: van_der_waals
