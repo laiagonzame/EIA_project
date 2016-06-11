@@ -83,7 +83,7 @@ write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, kBTref, tterm, stepwrite
 call inicubic(M,r,v,boxL,kBTref)
 real_r = r
 
-call PBC(M,r,boxL)
+call PBC(M,r,boxL,numproc,rank)
 call forces(M,r,F,boxL,sigma,epsil,epot)
 
 ! Temporal loop
@@ -93,7 +93,7 @@ do i = 1, N
    
    ! Apply PBC
 
-   call PBC(M,r,boxL)
+   call PBC(M,r,boxL,numproc,rank)
 
    ! Calculate new Forces
 

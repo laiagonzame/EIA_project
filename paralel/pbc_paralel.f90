@@ -46,7 +46,7 @@ end if
 !Primero juntamos todos los trozos de la matriz en el MASTER (rank=0)
 
 if (rank .ne. 0) then
-    call MPI_ISEND(posicion(:,ini:fin),1, MPI_INTEGER, 0, 1, MPI_COMM_WORLD, request, ierror)
+    call MPI_ISEND(posicion(:,ini:fin),1, MPI_REAL, 0, 1, MPI_COMM_WORLD, request, ierror)
 endif
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror) !Esperamos que todos hayan mandado
@@ -54,13 +54,13 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror) !Esperamos que todos hayan mandado
 !Hacemos la recepcion por parte del MASTER (rank=0)
 if (rank .eq. 0) then
    do i =1, numproc-1
-       call MPI_RECV(posicion(:,ini:fin), 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, stat, ierror)
+       call MPI_RECV(posicion(:,ini:fin), 1, MPI_REAL, i, 1, MPI_COMM_WORLD, stat, ierror)
    enddo
 
 
 !Copiamos la matriz entera a todos los workers para que asi las siguientes partes del codigo paralelizadas funcionen con toda la informacion actualizada.
    do i=1, numproc-1
-        call MPI_ISEND(posicion,1,MPI_INTEGER,i,1, MPI_COMM_WORLD,request,ierror)
+        call MPI_ISEND(posicion,1,MPI_REAL,i,1, MPI_COMM_WORLD,request,ierror)
    enddo
 
 endif
@@ -69,7 +69,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
 
 if (rank .ne. 0) then
-     call MPI_RECV(posicion,1, MPI_INTEGER, 0, 1, MPI_COMM_WORLD, stat, ierror)
+     call MPI_RECV(posicion,1, MPI_REAL, 0, 1, MPI_COMM_WORLD, stat, ierror)
 end if
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
