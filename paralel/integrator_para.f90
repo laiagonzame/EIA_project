@@ -61,24 +61,24 @@ do i=N_ini,N_end
 
 end do
 
-! ----- WORKER(i) to MASTER -----
+! el trabajador rank le envia al master la matriz que ha integrado
 if (rank .ne. MASTER) then
    call MPI_ISEND(coord(:,N_ini:N_end), 1, MPI_INTEGER,MASTER, 1, MPI_COMM_WORLD, request, ierror)
 end if
 
 
-! ---- waiting all WORKERS -----
-
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
-! ---- MASTER recive and merge
+! el master recive los mensajes de los workers y los junta en una sola matriz
 if (rank .eq. MASTER) then
    do i = 1, numproc-1
       
    call MPI_RECV(coord(:,N_ini:N_end), 1, MPI_INTEGER, i, 1,MPI_COMM_WORLD, stat, ierror)
 
    end do
-  ! ----- MASTER to WORKERS -----
+
+! el master envia la matriz completa integrada a todos los workers
+
    do i = 1, numproc-1
       call MPI_ISEND(coord, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
    end do
@@ -87,7 +87,8 @@ end if
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
-! ---- all WORKERS recive ---
+! el trabajador rank recive la matriz completa integrada 
+
 if (rank .ne. MASTER) then
  
   call MPI_RECV(coord, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
@@ -140,24 +141,27 @@ do i=N_ini,N_end
 end do
 
 
-! ----- WORKER(i) to MASTER -----
+! el trabajador rank le envia al master la matriz que ha integrado
+ 
+
 if (rank .ne. MASTER) then
    call MPI_ISEND(vel(:,N_ini:N_end), 1, MPI_INTEGER,MASTER, 1, MPI_COMM_WORLD, request, ierror)
 end if
 
 
-! ---- waiting all WORKERS -----
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
-! ---- MASTER recive and merge
+!  el master recive los mensajes de los workers y los junta en una sola matriz
+
 if (rank .eq. MASTER) then
    do i = 1, numproc-1
       
    call MPI_RECV(vel(:,N_ini:N_end), 1, MPI_INTEGER, i, 1,MPI_COMM_WORLD, stat, ierror)
 
    end do
-  ! ----- MASTER to WORKERS -----
+  ! el master envia la matriz completa integrada a todos los workers
+
    do i = 1, numproc-1
       call MPI_ISEND(vel, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
    end do
@@ -166,7 +170,8 @@ end if
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
-! ---- all WORKERS recive ---
+! el trabajador rank recive la matriz completa integrada
+
 if (rank .ne. MASTER) then
  
   call MPI_RECV(vel, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
