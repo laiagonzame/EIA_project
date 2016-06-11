@@ -48,12 +48,12 @@ parameter(mass = 1., sigma=1, epsil=1)
 parameter(tterm = 0.5, stepwrite=50)
 ! variables de paralelizacio
 integer :: stat(MPI_STATUS_SIZE)
-integer ::  ierror, request, rank, numproc,MASTER
+integer ::  ierror, request, rank, numproc
 
 call MPI_INIT(ierror)
 call MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror)
 call MPI_COMM_SIZE(MPI_COMM_WORLD, numproc, ierror)
-MASTER=0
+
 
 
 ! Defining dimensions
@@ -106,11 +106,9 @@ do i = 1, N
       stepwrite_count = stepwrite_count + 1
       call output(M,i,dt,r)
       do j = 1, M
-         if (rank .eq. MASTER) then 
-           write(11,*) r(1,j), r(2,j), r(3,j)
-           write(12,*) v(1,j), v(2,j), v(3,j)
-           write(13,*) real_r(i,j), real_r(2,j), real_r(3,j)
-         endif
+         write(11,*) r(1,j), r(2,j), r(3,j)
+         write(12,*) v(1,j), v(2,j), v(3,j)
+         write(13,*) real_r(i,j), real_r(2,j), real_r(3,j)
       end do
       write(14,*) epot
    endif
