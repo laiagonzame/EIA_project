@@ -48,7 +48,7 @@ if (rank .ne. 0) then
     size_m=3*(fin(rank)-ini(rank)+1)
     print*,size_m
     print*,posicion(:,ini(rank):fin(rank))
-    call MPI_ISEND(posicion(:,ini(rank):fin(rank)),size_m, MPI_REAL, 0, 1, MPI_COMM_WORLD, request(rank), ierror)
+    call MPI_ISEND(posicion(:,ini(rank):fin(rank)),30, MPI_REAL, 0, 1, MPI_COMM_WORLD, request(rank), ierror)
 endif
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror) !Esperamos que todos hayan mandado
@@ -59,7 +59,7 @@ if (rank .eq. 0) then
    do i =1, numproc-1
        size_m=3*(fin(i)-ini(i)+1)
        print*,size_m
-       call MPI_RECV(posicion(:,ini(i):fin(i)), size_m, MPI_REAL, i, 1, MPI_COMM_WORLD, stat, ierror)
+       call MPI_RECV(posicion(:,ini(i):fin(i)), 30, MPI_REAL, i, 1, MPI_COMM_WORLD, stat, ierror)
        print*,posicion(:,ini(i):fin(i))
    enddo
 
