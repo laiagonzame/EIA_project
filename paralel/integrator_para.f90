@@ -21,7 +21,8 @@ real*8, dimension(3,N),intent(in) :: frz,vel
 real*8, dimension(3,N),intent(inout) :: coord
 integer, intent(in) :: N, rank, numproc
 real*8, intent(in) :: ts,m,L
-integer :: i, dproc, N_end, MASTER, ierror, request, N_ini
+integer :: i, dproc,  MASTER, ierror, request
+integer, dimension(:), allocatable :: N_ini,N_end, siz
 real*8, dimension(3) :: dr
 integer :: stat(MPI_STATUS_SIZE)
 
@@ -41,29 +42,41 @@ integer :: stat(MPI_STATUS_SIZE)
 
 dproc=nint(real(N)/real(numproc))
 MASTER=0
-N_ini=(rank*dproc)+1
 
-if (rank /= (numproc-1)) then
+allocate ( N_ini(numproc), N_end(numproc), siz(numproc))
 
-N_end=(rank+1)*dproc
+
+do i=1,numproc
+
+
+N_ini(i)=((i-1)*dproc)+1
+
+
+if ( i /= numproc) then
+
+N_end(i)=i*dproc
 
 else 
 
-N_end=N
+N_end(i)=N
 
 end if
 
-do i=N_ini,N_end
+siz(i)=(N_end(i)-N_ini(i)+1)*3
+
+end do
+
+do i=N_ini(rank+1),N_end(rank+1)
     
- dr=coord(:,i)+vel(:,i)*ts+(ts**2)*frz(:,i)/(2*m)
+ dr=vel(:,i)*ts+(ts**2)*frz(:,i)/(2*m)
  call  Check_properdisplacement(dr,L)
- coord(:,i)=dr
+ coord(:,i)=dr+coord(:,i)
 
 end do
 
 ! el trabajador rank le envia al master la matriz que ha integrado
 if (rank .ne. MASTER) then
-   call MPI_ISEND(coord(:,N_ini:N_end), 1, MPI_INTEGER,MASTER, 1, MPI_COMM_WORLD, request, ierror)
+   call MPI_ISEND(coord(:,N_ini(rank+1):N_end(rank+1)), siz(rank+1), MPI_REAL8,MASTER, 1, MPI_COMM_WORLD, request, ierror)
 end if
 
 
@@ -73,14 +86,14 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 if (rank .eq. MASTER) then
    do i = 1, numproc-1
       
-   call MPI_RECV(coord(:,N_ini:N_end), 1, MPI_INTEGER, i, 1,MPI_COMM_WORLD, stat, ierror)
+   call MPI_RECV(coord(:,N_ini(i+1):N_end(i+1)), siz(i+1), MPI_REAL8, i, 1,MPI_COMM_WORLD, stat, ierror)
 
    end do
 
 ! el master envia la matriz completa integrada a todos los workers
 
    do i = 1, numproc-1
-      call MPI_ISEND(coord, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
+      call MPI_ISEND(coord, N*3, MPI_REAL8, i, 1, MPI_COMM_WORLD, request, ierror)
    end do
 
 end if
@@ -91,7 +104,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
 if (rank .ne. MASTER) then
  
-  call MPI_RECV(coord, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
+  call MPI_RECV(coord, N*3, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
  
 end if
 
@@ -107,9 +120,9 @@ real*8, dimension(3,N), intent(in) :: frz,frzt
 real*8, dimension(3,N), intent(inout) :: vel
 integer, intent(in):: N,rank,numproc
 real*8, intent(in)::ts,m
-integer:: i, dproc, N_end, MASTER, N_ini, request, ierror
+integer:: i, dproc, MASTER, request, ierror
 integer :: stat(MPI_STATUS_SIZE)
-
+integer, dimension(:), allocatable :: N_ini,N_end,siz
 ! Subrutina que integra la posicion
 ! Como input acepta:
 ! el numero de particulas de la dinamica (N)
@@ -121,20 +134,30 @@ integer :: stat(MPI_STATUS_SIZE)
 
 dproc=nint(real(N)/real(numproc))
 MASTER=0
-N_ini=(rank*dproc)+1
 
-if (rank /= (numproc-1)) then
 
-N_end=(rank+1)*dproc
+allocate ( N_ini(numproc), N_end(numproc),siz(numproc))
+
+do i=1,numproc
+
+
+N_ini(i)=((i-1)*dproc)+1
+
+if (i == numproc) then
+
+N_end(i)=i*dproc
 
 else 
 
-N_end=N
+N_end(i)=N
 
 end if
 
+siz(i)=(N_end(i)-N_ini(i)+1)*3
+end do
 
-do i=N_ini,N_end
+do i=N_ini(rank+1),N_end(rank+1)
+
    
   vel(:,i)=vel(:,i)+(frz(:,i)+frzt(:,i))*ts/(2*m)
 
@@ -145,7 +168,7 @@ end do
  
 
 if (rank .ne. MASTER) then
-   call MPI_ISEND(vel(:,N_ini:N_end), 1, MPI_INTEGER,MASTER, 1, MPI_COMM_WORLD, request, ierror)
+   call MPI_ISEND(vel(:,N_ini(rank+1):N_end(rank+1)), siz(rank+1), MPI_REAL8,MASTER, 1, MPI_COMM_WORLD, request, ierror)
 end if
 
 
@@ -157,13 +180,13 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 if (rank .eq. MASTER) then
    do i = 1, numproc-1
       
-   call MPI_RECV(vel(:,N_ini:N_end), 1, MPI_INTEGER, i, 1,MPI_COMM_WORLD, stat, ierror)
+   call MPI_RECV(vel(:,N_ini(i+1):N_end(i+1)), siz(i+1), MPI_REAL8, i, 1,MPI_COMM_WORLD, stat, ierror)
 
    end do
   ! el master envia la matriz completa integrada a todos los workers
 
    do i = 1, numproc-1
-      call MPI_ISEND(vel, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
+      call MPI_ISEND(vel, N*3, MPI_REAL8, i, 1, MPI_COMM_WORLD, request, ierror)
    end do
 
 end if
@@ -174,7 +197,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
 if (rank .ne. MASTER) then
  
-  call MPI_RECV(vel, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
+  call MPI_RECV(vel, N*3, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
  
 end if
 
