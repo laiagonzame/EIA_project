@@ -4,7 +4,7 @@ help: Makefile
 
 ##compile : Compila i fa el "link"  del programa de dinamica.
 .PHONY : compile
-compile: main.o pbc.o integrator.o ini.o forces.o write_vmd.o link
+compile: main.o pbc.o integrator.o ini.o forces.o write_vmd.o link clean
 
 ##compile_time : Compila i fa el "link" per mirar els temps. 
 .PHONY : compile_time
@@ -98,6 +98,25 @@ time :
 #temperature.o :./serie/temperature.f90
 #	gfortran -c ./serie/temperature.f90 -o temperature.0
 
+#Compilacio del codi paralel, dins del cluster
+
+##login : loguear al cluster para compilar
+.PHONY: login
+login:
+	qrsh -q cerqt2.q -pe smp 1
+	@echo "cal fer \"module load\""
+
+##compile_mpi : per a compilar el programa paral·lelitzat 
+.PHONY: compile_mpi
+compile_mpi:
+
+	mpif90 -g -c forces-parallel.f90 -o forces-parallel.o
+	mpif90 -g -c integrator_para.f90 -o integrator_para.o
+	mpif90 -g -c pbc_paralel.f90 -o pbc_paralel.o
+	mpif90 -g -c  main_trajs.f90 -o main_trajs.o
+	mpif90 -g -c ini.f90 -o ini.o
+	mpif90 -g forces_parallel.o pbc_paralel.o integrator_para.o main_trajs.o -c van_der_waals
+	@echo "executable file: van_der_waals"
 
 ##clean : Esborra tots els .o generats
 .PHONY : clean

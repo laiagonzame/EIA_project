@@ -54,12 +54,12 @@ nf = 3 * M - 3 ! number of degrees of freedom
 stepwrite_count = 0 ! number of snapshots
 
 ! Open files
-open(unit=10, file='../data/params.data', status='unknown')
-open(unit=11, file='../data/posicions.data', status='unknown')
-open(unit=12, file='../data/velocitats.data', status='unknown')
-open(unit=13, file='../data/posicions_reals.data', status='unknown')
-open(unit=14, file='../data/ener_potencial.data', status='unknown')
-open(unit=20, file='../data/traj_vmd.data', status='unknown')
+open(unit=10, file='data/params.data', status='unknown')
+open(unit=11, file='data/posicions.data', status='unknown')
+open(unit=12, file='data/velocitats.data', status='unknown')
+open(unit=13, file='data/posicions_reals.data', status='unknown')
+open(unit=14, file='data/ener_potencial.data', status='unknown')
+open(unit=20, file='data/traj_vmd.data', status='unknown')
 
 ! save parameters
 write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, kBTref, tterm, stepwrite
