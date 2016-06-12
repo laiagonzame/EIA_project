@@ -46,9 +46,7 @@ enddo
 if (rank .ne. 0) then
     request(rank)=0
     size_m=3*(fin(rank)-ini(rank)+1)
-    print*,size_m
-    print*,posicion(:,ini(rank):fin(rank))
-    call MPI_ISEND(posicion(:,ini(rank):fin(rank)),30, MPI_REAL, 0, 1, MPI_COMM_WORLD, request(rank), ierror)
+    call MPI_ISEND(posicion(:,ini(rank):fin(rank)),size_m, MPI_REAL8, 0, 1, MPI_COMM_WORLD, request(rank), ierror)
 endif
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror) !Esperamos que todos hayan mandado
@@ -58,16 +56,14 @@ if (rank .eq. 0) then
 
    do i =1, numproc-1
        size_m=3*(fin(i)-ini(i)+1)
-       print*,size_m
-       call MPI_RECV(posicion(:,ini(i):fin(i)), 30, MPI_REAL, i, 1, MPI_COMM_WORLD, stat, ierror)
-       print*,posicion(:,ini(i):fin(i))
+       call MPI_RECV(posicion(:,ini(i):fin(i)), size_m, MPI_REAL8, i, 1, MPI_COMM_WORLD, stat, ierror)
    enddo
 
 
 !Copiamos la matriz entera a todos los workers para que asi las siguientes partes del codigo paralelizadas funcionen con toda la informacion actualizada.
    do i=1, numproc-1
         request(0)=i
-        call MPI_ISEND(posicion,3*num_particulas,MPI_REAL,i,1, MPI_COMM_WORLD,request(i),ierror)
+        call MPI_ISEND(posicion,3*num_particulas,MPI_REAL8,i,1, MPI_COMM_WORLD,request(i),ierror)
    enddo
 endif
 
@@ -75,7 +71,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
 
 if (rank .ne. 0) then
-     call MPI_RECV(posicion,3*num_particulas, MPI_REAL, 0, 1, MPI_COMM_WORLD, stat, ierror)
+     call MPI_RECV(posicion,3*num_particulas, MPI_REAL8, 0, 1, MPI_COMM_WORLD, stat, ierror)
 end if
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
