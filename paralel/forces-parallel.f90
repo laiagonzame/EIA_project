@@ -59,8 +59,8 @@ end do
 
 ! ----- WORKER(i) to MASTER -----
 if (taskid .ne. MASTER) then
-   call MPI_ISEND(Fij(:,indx_ppw(taskid):indx_ppw(taskid+1)-1), 1, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
-   call MPI_ISEND(epot_vec(indx_ppw(taskid):indx_ppw(taskid+1)-1), 1, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
+   call MPI_ISEND(Fij(:,indx_ppw(taskid):indx_ppw(taskid+1)-1), 3*ppw(i), MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
+   call MPI_ISEND(epot_vec(indx_ppw(taskid):indx_ppw(taskid+1)-1), ppw(i), MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
 end if
 
 ! ---- waiting all WORKERS -----
@@ -69,8 +69,8 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 ! ---- MASTER recive and merge
 if (taskid .eq. MASTER) then
    do i = 1, numproc-1
-      call MPI_RECV(Fij(:,indx_ppw(i):indx_ppw(i+1)-1), 1, MPI_REAL8, i, 1, MPI_COMM_WORLD, stat, ierror)
-      call MPI_RECV(epot_vec(indx_ppw(i):indx_ppw(i+1)-1), 1, MPI_REAL8, i, 1, MPI_COMM_WORLD, stat, ierror)
+      call MPI_RECV(Fij(:,indx_ppw(i):indx_ppw(i+1)-1), 3*ppw(i), MPI_REAL8, i, 1, MPI_COMM_WORLD, stat, ierror)
+      call MPI_RECV(epot_vec(indx_ppw(i):indx_ppw(i+1)-1), ppw(i), MPI_REAL8, i, 1, MPI_COMM_WORLD, stat, ierror)
    end do
    
    do i = 1, pairs
@@ -81,7 +81,7 @@ if (taskid .eq. MASTER) then
 
    ! ----- MASTER to WORKERS -----
    do i = 1, numproc-1
-      call MPI_ISEND(F, 1, MPI_REAL8, i, 1, MPI_COMM_WORLD, request, ierror)
+      call MPI_ISEND(F, 3*M, MPI_REAL8, i, 1, MPI_COMM_WORLD, request, ierror)
       call MPI_ISEND(epot, 1, MPI_REAL8, i, 1, MPI_COMM_WORLD, request, ierror)
    end do
 end if
@@ -90,7 +90,7 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
 ! ---- all WORKERS recive ---
 if (taskid .ne. MASTER) then
-   call MPI_RECV(F, 1, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
+   call MPI_RECV(F, 3*M, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
    call MPI_RECV(epot, 1, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
 end if
 
