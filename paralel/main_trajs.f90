@@ -86,7 +86,7 @@ call inicubic(M,r,v,boxL,kBTref)
 real_r = r
 
 call PBC(M,r,boxL,numproc,rank)
-call forces(M,r,F,boxL,sigma,epsil,epot)
+call forces(M,r,F,boxL,sigma,epsil,epot,rank,numproc,MASTER)
 
 ! Temporal loop
 do i = 1, N
@@ -99,7 +99,7 @@ do i = 1, N
 
    ! Calculate new Forces
 
-   call forces(M,r,F_t,boxL,sigma,epsil,epot)
+   call forces(M,r,F_t,boxL,sigma,epsil,epot,rank,numproc,MASTER)
 
    call Verlet_Vel(F,F_t,v,M,dt,mass,rank,numproc)
    
