@@ -40,7 +40,6 @@ subroutine inirandom(N,pos,vel,box,T,numproc,rank)
         call random_number(aux)
 	end do
         call random_number(aux)
-	write(*,*) rank,aux,seed,11*rank+3
         Np=floor(float(N)/float(numproc))
 
         if (rank .eq.(numproc-1)) then
@@ -52,7 +51,6 @@ subroutine inirandom(N,pos,vel,box,T,numproc,rank)
         end if
         aux=3
         cont=nini
-	write(*,*) rank
       do while (cont<nfin+1)
               
  10           call random_number(aux)
@@ -82,12 +80,10 @@ subroutine inirandom(N,pos,vel,box,T,numproc,rank)
                   
                end do
 
-             write(*,*) cont 
                 cont=cont+1
       
 end do
 
-	write(*,*) rank, "Fuera bucle"
         if (rank .ne. 0) then
           call MPI_ISEND(pos(:,nini:nfin),(nfin-nini+1)*3, MPI_REAL8, 0, 1, MPI_COMM_WORLD, request, ierror)
           !call MPI_ISEND(aux2,1,MPI_INTEGER,0,1,MPI_COMM_WORLD,request,ierror)
@@ -95,7 +91,6 @@ end do
          
                 
         call MPI_BARRIER(MPI_COMM_WORLD, ierror) !Esperamos que todos hayan mandado
-        write(*,*) rank, "pasa barrera"
         
         if (rank .eq. 0) then
           do i =1, numproc-1
@@ -111,26 +106,21 @@ end do
           !call MPI_RECV(aux2,1,MPI_INTEGER,i,1,MPI_COMM_WORLD,request,ierror)
          enddo
          
-         write(*,*) rank,"dentro"
          
          do i=1, numproc-1
           call MPI_ISEND(pos,N*3,MPI_REAL8,i,1, MPI_COMM_WORLD,request,ierror)
          enddo
 
-        write(*,*) rank, "positions sent" 
-        write(*,*) pos
 
         end if
         call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
-        write(*,*) rank ,"after barrier 2"
         
         if (rank .ne. 0) then
            call MPI_RECV(pos,N*3, MPI_REAL8, 0, 1, MPI_COMM_WORLD, stat, ierror)
         end if
 
         call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-        write(*,*) rank, "ending"
         
 end subroutine
 end module

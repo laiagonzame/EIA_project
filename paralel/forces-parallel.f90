@@ -52,16 +52,17 @@ do i = 1, M-1
    end do
 end do
 
-
 do i = indx_ppw(taskid), indx_ppw(taskid+1)-1
    call lj(r(:,vec_pairs(1,i)), r(:,vec_pairs(2,i)), boxlength, sigma, epsil, rc2, Fij(:,i), epot_vec(i))
 end do
 
+
 ! ----- WORKER(i) to MASTER -----
-if (taskid .ne. MASTER) then
-   call MPI_ISEND(Fij(:,indx_ppw(taskid):indx_ppw(taskid+1)-1), 3*ppw(i), MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
-   call MPI_ISEND(epot_vec(indx_ppw(taskid):indx_ppw(taskid+1)-1), ppw(i), MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
+if (taskid .ne. MASTER) then 
+   call MPI_ISEND(Fij(:,indx_ppw(taskid):indx_ppw(taskid+1)-1), 3*ppw(taskid), MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
+   call MPI_ISEND(epot_vec(indx_ppw(taskid):indx_ppw(taskid+1)-1), ppw(taskid), MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
 end if
+
 
 ! ---- waiting all WORKERS -----
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
