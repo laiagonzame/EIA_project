@@ -43,9 +43,9 @@ double precision, dimension(:,:), allocatable :: r, real_r, v, F,F_t
 ! Ouputs
 double precision :: ecin, epot, temp
 ! defining parameters
-parameter(M = 500, N = 2000, nhis = 400)
+parameter(M = 300, N = 1000, nhis = 400)
 parameter(mass = 1., sigma=1, epsil=1)
-parameter(tterm = 0.5, stepwrite=50)
+parameter(tterm = 0, stepwrite=50)
 ! variables de paralelizacio
 integer :: stat(MPI_STATUS_SIZE)
 integer ::  ierror, request, rank, numproc,MASTER
@@ -82,25 +82,28 @@ write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, kBTref, tterm, stepwrite
 
 ! Initial configuration+velocity
 
-call inicubic(M,r,v,boxL,kBTref)
+call inirandom(M,r,v,boxL,kBTref,numproc,rank)
 real_r = r
-
 call PBC(M,r,boxL,numproc,rank)
+ print *, "antes de fuerzas",rank
 call forces(M,r,F,boxL,sigma,epsil,epot,rank,numproc,MASTER)
-
+ print *, "despues de fuerzas, antes del bucle",rank
 ! Temporal loop
 do i = 1, N
-   call Verlet_Coord(r,F,v,M,dt,mass,boxL,rank,numproc)
-   call Verlet_Coord(real_r,F,v,M,dt,mass,boxL,rank,numproc)
    
+   call Verlet_Coord(r,F,v,M,dt,mass,boxL,rank,numproc)
+   print*,"despues de coordenadas",rank
+   call Verlet_Coord(real_r,F,v,M,dt,mass,boxL,rank,numproc)
+   print*, "despues de coordenadas sin pbc", rank   
+
    ! Apply PBC
 
    call PBC(M,r,boxL,numproc,rank)
-
+  
    ! Calculate new Forces
 
    call forces(M,r,F_t,boxL,sigma,epsil,epot,rank,numproc,MASTER)
-
+   print *, "he llegado hasta fuerzas"
    call Verlet_Vel(F,F_t,v,M,dt,mass,rank,numproc)
    
    !write trajectories and potencial energy
@@ -112,14 +115,15 @@ do i = 1, N
               write(11,*) r(1,j), r(2,j), r(3,j)
               write(12,*) v(1,j), v(2,j), v(3,j)
               write(13,*) real_r(i,j), real_r(2,j), real_r(3,j)
-            endif
          end do
          write(14,*) epot
       endif
    endif
 
    F = F_t
-
+   if (rank == MASTER) then
+   print *, i
+   end if
 end do
 
 ! save number of snapshots

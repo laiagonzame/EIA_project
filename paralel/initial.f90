@@ -76,13 +76,13 @@ subroutine inirandom(N,pos,vel,box,T,numproc,rank)
                   dy=dy-box*nint(dy/box)
                   dz=dz-box*nint(dz/box)
                   r=sqrt(dx**2+dy**2+dz**2)
-                  if(r<1.4) then
+                  if(r<1.0) then
                   go to 10
                   end if
                   
                end do
 
-            
+             write(*,*) cont 
                 cont=cont+1
       
 end do

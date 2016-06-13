@@ -113,9 +113,12 @@ compile_mpi:
 	mpif90 -g -c forces-parallel.f90 -o forces-parallel.o
 	mpif90 -g -c integrator_para.f90 -o integrator_para.o
 	mpif90 -g -c pbc_paralel.f90 -o pbc_paralel.o
+	mpif90 -g -c initial.f90 -o ini.o
+	mpif90 -g -c statistics.f90 -o statistics.o
+	mpif90 -g -c temperature.f90 -o temperature.o
+	mpif90 -g -c write_vmd.f90 -o write_vmd.o
 	mpif90 -g -c  main_trajs.f90 -o main_trajs.o
-	mpif90 -g -c ini.f90 -o ini.o
-	mpif90 -g forces_parallel.o pbc_paralel.o integrator_para.o main_trajs.o -c van_der_waals
+	mpif90 -g  ini.o forces-parallel.o pbc_paralel.o integrator_para.o main_trajs.o statistics.o temperature.o write_vmd.o -o van_der_waals
 	@echo "executable file: van_der_waals"
 
 ##clean : Esborra tots els .o generats
