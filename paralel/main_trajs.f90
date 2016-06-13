@@ -68,12 +68,14 @@ nf = 3 * M - 3 ! number of degrees of freedom
 stepwrite_count = 0 ! number of snapshots
 
 ! Open files
-open(unit=10, file='data/params.data', status='unknown')
-open(unit=11, file='data/posicions.data', status='unknown')
-open(unit=12, file='data/velocitats.data', status='unknown')
-open(unit=13, file='data/posicions_reals.data', status='unknown')
-open(unit=14, file='data/ener_potencial.data', status='unknown')
-open(unit=20, file='data/traj_vmd.data', status='unknown')
+if (rank .eq. MASTER) then 
+   open(unit=10, file='data/params.data', status='unknown')
+   open(unit=11, file='data/posicions.data', status='unknown')
+   open(unit=12, file='data/velocitats.data', status='unknown')
+   open(unit=13, file='data/posicions_reals.data', status='unknown')
+   open(unit=14, file='data/ener_potencial.data', status='unknown')
+   open(unit=20, file='data/traj_vmd.data', status='unknown')
+end if
 
 ! save parameters
 write(10,*) boxL, nhis, M, sigma, epsil, mass, dt, kBTref, tterm, stepwrite
@@ -102,17 +104,18 @@ do i = 1, N
    call Verlet_Vel(F,F_t,v,M,dt,mass,rank,numproc)
    
    !write trajectories and potencial energy
-   If (i*dt > tterm .AND. mod(i,stepwrite) ==  0) then
-      stepwrite_count = stepwrite_count + 1
-      call output(M,i,dt,r)
-      do j = 1, M
-         if (rank .eq. MASTER) then 
-           write(11,*) r(1,j), r(2,j), r(3,j)
-           write(12,*) v(1,j), v(2,j), v(3,j)
-           write(13,*) real_r(i,j), real_r(2,j), real_r(3,j)
-         endif
-      end do
-      write(14,*) epot
+   if (rank .eq. MASTER) then 
+      If (i*dt > tterm .AND. mod(i,stepwrite) ==  0) then
+         stepwrite_count = stepwrite_count + 1
+         call output(M,i,dt,r)
+         do j = 1, M
+              write(11,*) r(1,j), r(2,j), r(3,j)
+              write(12,*) v(1,j), v(2,j), v(3,j)
+              write(13,*) real_r(i,j), real_r(2,j), real_r(3,j)
+            endif
+         end do
+         write(14,*) epot
+      endif
    endif
 
    F = F_t
@@ -120,7 +123,9 @@ do i = 1, N
 end do
 
 ! save number of snapshots
-write(10,*) stepwrite_count
+if (rank .eq. MASTER) then 
+   write(10,*) stepwrite_count
+end if
 
 close(10)
 close(11)
