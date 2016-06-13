@@ -3,9 +3,9 @@ implicit none
 
 contains
 
-subroutine forces(M,r,F,boxlength,sigma,epsil,epot)
+subroutine forces(M,r,F,boxlength,sigma,epsil,epot,taskid,numproc,MASTER)
 include 'mpif.h'
-integer, intent(in) :: M
+integer, intent(in) :: M, taskid, numproc, MASTER
 double precision, dimension(3,M), intent(in) :: r
 double precision, dimension(3,M), intent(out) :: F
 double precision, intent(in) :: boxlength, sigma, epsil
@@ -13,21 +13,15 @@ double precision, dimension(3) :: rij
 double precision :: rcut, rijl, dist2, sigmar, rc2, force,epot
 integer :: i, j, l
 ! parallelization variables
-integer :: taskid, ierror, numproc, extras, pairs, counter, request, MASTER
+integer :: ierror, extras, pairs, counter, request
 integer :: stat(MPI_STATUS_SIZE)
 integer, dimension(:), allocatable :: ppw, indx_ppw ! pairs per worker
 integer, dimension(:,:), allocatable :: vec_pairs
 double precision, dimension (:,:), allocatable :: Fij
 double precision, dimension (:), allocatable :: epot_vec
 
-MASTER = 0
 F = 0d0
 epot = 0d0
-
-! Init mpi
-call MPI_INIT(ierror)
-call MPI_COMM_RANK(MPI_COMM_WORLD, taskid, ierror)
-call MPI_COMM_SIZE(MPI_COMM_WORLD, numproc, ierror)
 
 allocate(ppw(numproc))
 
@@ -65,8 +59,8 @@ end do
 
 ! ----- WORKER(i) to MASTER -----
 if (taskid .ne. MASTER) then
-   call MPI_ISEND(Fij(:,indx_ppw(taskid):indx_ppw(taskid+1)-1), 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, request, ierror)
-   call MPI_ISEND(epot_vec(indx_ppw(taskid):indx_ppw(taskid+1)-1), 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, request, ierror)
+   call MPI_ISEND(Fij(:,indx_ppw(taskid):indx_ppw(taskid+1)-1), 1, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
+   call MPI_ISEND(epot_vec(indx_ppw(taskid):indx_ppw(taskid+1)-1), 1, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, request, ierror)
 end if
 
 ! ---- waiting all WORKERS -----
@@ -75,35 +69,32 @@ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 ! ---- MASTER recive and merge
 if (taskid .eq. MASTER) then
    do i = 1, numproc-1
-      call MPI_RECV(Fij(:,indx_ppw(i):indx_ppw(i+1)-1), 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, stat, ierror)
-      call MPI_RECV(epot_vec(indx_ppw(i):indx_ppw(i+1)-1), 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, stat, ierror)
+      call MPI_RECV(Fij(:,indx_ppw(i):indx_ppw(i+1)-1), 1, MPI_REAL8, i, 1, MPI_COMM_WORLD, stat, ierror)
+      call MPI_RECV(epot_vec(indx_ppw(i):indx_ppw(i+1)-1), 1, MPI_REAL8, i, 1, MPI_COMM_WORLD, stat, ierror)
    end do
    
-   ! -----
    do i = 1, pairs
       F(:, vec_pairs(1,i)) = F(:, vec_pairs(1,i)) + Fij(:,i) 
       F(:, vec_pairs(2,i)) = F(:, vec_pairs(2,i)) - Fij(:,i) 
    end do
+   epot = sum(epot_vec)
 
    ! ----- MASTER to WORKERS -----
    do i = 1, numproc-1
-      call MPI_ISEND(F, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
-      call MPI_ISEND(epot_vec, 1, MPI_INTEGER, i, 1, MPI_COMM_WORLD, request, ierror)
+      call MPI_ISEND(F, 1, MPI_REAL8, i, 1, MPI_COMM_WORLD, request, ierror)
+      call MPI_ISEND(epot, 1, MPI_REAL8, i, 1, MPI_COMM_WORLD, request, ierror)
    end do
-
 end if
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
 ! ---- all WORKERS recive ---
 if (taskid .ne. MASTER) then
-   call MPI_RECV(F, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
-   call MPI_RECV(epot_vec, 1, MPI_INTEGER, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
+   call MPI_RECV(F, 1, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
+   call MPI_RECV(epot, 1, MPI_REAL8, MASTER, 1, MPI_COMM_WORLD, stat, ierror)
 end if
 
 call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-
-call MPI_FINALIZE(ierror)
 
 endsubroutine
 
