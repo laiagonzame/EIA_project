@@ -36,16 +36,17 @@ Mtask=M/numproc
  if (taskid .eq. numproc-1) then 
    Mtask=Mtask+mod(M,numproc)
  endif
-! print *,"Hello from task ", taskid," of ", numproc, " Mtask=",Mtask," of ",M
+ !print *,taskid," ini ", Mini, " end=",Mini+Mtask-1
 !---------------------------
 
 !--------- do their part of the job ------------------
 message=0d0
-do i=1,Mtask
+do i=0,Mtask-1
    message = message + (vel(1,Mini+i)**2+vel(2,Mini+i)**2+vel(3,Mini+i)**2)/dfloat(nf)
     if (taskid .eq. numproc-1) then
      endif
 end do
+
 
 !--------- Barrier: waiting for everyone ------------------
  call MPI_BARRIER(MPI_COMM_WORLD, ierror)
@@ -57,17 +58,31 @@ end do
   do i=0,numproc-1
     request(i+1) = i 
     partner = i
-    call MPI_ISEND(message, 1, MPI_INTEGER, partner, 1, MPI_COMM_WORLD, request(i+1),ierror)
+    call MPI_ISEND(message, 1, MPI_DOUBLE_PRECISION, partner, 1, MPI_COMM_WORLD, request(i+1),ierror)
  enddo
+ !print *,taskid," message ", message
+ 
+ !--------- Barrier: waiting for everyone ------------------
+ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+ if (taskid .eq. numproc-1) then
+ endif
  
  !--------- receive kbt contributions and join them ------------------
  kbt=0d0
+ message=0
   do i=0,numproc-1
     sender = i
-    call MPI_RECV(message, 1, MPI_INTEGER, sender, 1, MPI_COMM_WORLD, stat, ierror)
+    call MPI_RECV(message, 1, MPI_DOUBLE_PRECISION, sender, 1, MPI_COMM_WORLD, stat, ierror)
     kbt=kbt+message
-    ! Print partner info and continue
+    !print *,taskid," message ", message,"sender",sender
  enddo
+ 
+ !--------- Barrier: waiting for everyone ------------------
+ call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+ if (taskid .eq. numproc-1) then
+ endif
+ 
+ !print *,taskid," kbt ", kbt
 
   deallocate (request, STAT=aerr)
 
