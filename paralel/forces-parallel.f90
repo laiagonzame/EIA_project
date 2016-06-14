@@ -22,6 +22,7 @@ double precision, dimension (:), allocatable :: epot_vec
 
 F = 0d0
 epot = 0d0
+rc2 = 25d0 * sigma * sigma
 
 allocate(ppw(numproc))
 

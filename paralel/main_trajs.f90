@@ -115,7 +115,7 @@ do i = 1, N
 
    F = F_t
    if (rank == MASTER) then
-   print *, i
+      print *, i
    end if
 end do
 
