@@ -66,12 +66,7 @@ subroutine inirandom(N,pos,vel,box,T,numproc,rank)
               pos(2,cont)=(2*aux-1.)*box/2.
               call random_number(aux)
               pos(3,cont)=(2*aux-1.)*box/2.
-              
-              vel(1,cont)=0.
-              vel(2,cont)=0.
-              vel(3,cont)=0.
-
-              
+           
               do i=nini,cont-1
                       
                   dx=pos(1,i)-pos(1,cont)
@@ -123,10 +118,31 @@ end do
         
         !Esperamos a que se haya enviado todo
         call MPI_BARRIER(MPI_COMM_WORLD, ierror)
-
-        !Si somos diferentes al master, recibimos las matriz completa
+        
+             !Si somos diferentes al master, recibimos las matriz completa
         if (rank .ne. 0) then
            call MPI_RECV(pos,N*3, MPI_REAL8, 0, 1, MPI_COMM_WORLD, stat, ierror)
+        end if
+
+	!Esperamos a que todos lleguen y ya podemos continuar con las siguientes partes del codigo
+        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        
+         if (rank .eq. 0) then !Si somos el master, tenemos que recibir y reenviar la informacion
+            vel=0.0
+         
+         !Reenviamos la matriz completa para que todos puedan trabajar con ella
+         do i=1, numproc-1
+          call MPI_ISEND(vel,N*3,MPI_REAL8,i,1, MPI_COMM_WORLD,request,ierror)
+         enddo
+
+        end if
+        
+        !Esperamos a que se haya enviado todo
+        call MPI_BARRIER(MPI_COMM_WORLD, ierror)
+        
+             !Si somos diferentes al master, recibimos las matriz completa
+        if (rank .ne. 0) then
+           call MPI_RECV(vel,N*3, MPI_REAL8, 0, 1, MPI_COMM_WORLD, stat, ierror)
         end if
 
 	!Esperamos a que todos lleguen y ya podemos continuar con las siguientes partes del codigo
