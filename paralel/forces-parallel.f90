@@ -122,7 +122,6 @@ if (dist2<rc2) then
    force = 24d0*epsil*(2d0*sigmar**(2d0)-sigmar)/dist2
    do l=1,3
       F(l) = -force*rij(l)
-      F(l) = force*rij(l)
    enddo
    epot=4d0*epsil*(sigmar**(2.)-sigmar)
 endif
