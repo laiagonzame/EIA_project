@@ -3,16 +3,8 @@ implicit none
 public
 
 ! Modulo que contiene un integrador tipo velocity verlet
-! Como input acepta:
-! el numero de particulas de la dinamica (N)
-! una matriz (3,N) con las posiciones de las N particulas (coord) 
-! una matriz (3,N) con las velocidades de las N particulas (vel)
-! una matriz (3,N) con las fuerzas de las N particulas (frz)
-! el paso de tiempo de la dinamica (ts)
-! la massa de las particulas (m)
-! Como output saca la matriz coord con las posiciones actualizadas
 !
-
+! Desarrollado por Pablo M. Blanco, Univerisdad de Barcelona
 
 contains
 
@@ -51,7 +43,7 @@ integer, intent(in):: N
 real*8, intent(in)::ts,m
 integer:: i
 
-! Subrutina que integra la posicion
+! Subrutina que integra la velocidad
 ! Como input acepta:
 ! el numero de particulas de la dinamica (N)
 ! una matriz (3,N) con las velocidades de las N particulas (vel)

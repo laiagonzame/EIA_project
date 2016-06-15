@@ -3,15 +3,8 @@ implicit none
 public
 
 ! Modulo que contiene un integrador tipo velocity verlet
-! Como input acepta:
-! el numero de particulas de la dinamica (N)
-! una matriz (3,N) con las posiciones de las N particulas (coord) 
-! una matriz (3,N) con las velocidades de las N particulas (vel)
-! una matriz (3,N) con las fuerzas de las N particulas (frz)
-! el paso de tiempo de la dinamica (ts)
-! la massa de las particulas (m)
-! Como output saca la matriz coord con las posiciones actualizadas
-
+!
+! Realizado por Pablo M. Blanco, Universidad de Barcelona
 
 contains
 
@@ -38,13 +31,18 @@ integer :: stat(MPI_STATUS_SIZE)
 ! Como output saca la matriz coord con las posiciones actualizadas
 
 
-
+! Se calcula el numero de particulas por procesador redondeado al entero 
+! mas cercano
 
 dproc=nint(real(N)/real(numproc))
-MASTER=0
+MASTER=0 ! el procesador 0 sera el master
 
 allocate ( N_ini(numproc), N_end(numproc), siz(numproc))
 
+! se asigna el rango de particulas de cada procesador i 
+! de ((i-1)*dproc)+1 a i*dproc
+! menos el ultimo procesador que se ajusta para tener en cuenta
+! el redondeo
 
 do i=1,numproc
 
@@ -65,6 +63,8 @@ end if
 siz(i)=(N_end(i)-N_ini(i)+1)*3
 
 end do
+
+! Bucle de la integracion
 
 do i=N_ini(rank+1),N_end(rank+1)
     
@@ -132,11 +132,20 @@ integer, dimension(:), allocatable :: N_ini,N_end,siz
 ! el paso de tiempo de la dinamica (ts)
 ! la massa de las particulas (m)
 
+! Se calcula el numero de particulas por procesador redondeado al entero 
+! mas cercano
+
 dproc=nint(real(N)/real(numproc))
-MASTER=0
+MASTER=0 ! se asigna el procesador 0 como master
 
 
 allocate ( N_ini(numproc), N_end(numproc),siz(numproc))
+
+
+! se asigna el rango de particulas de cada procesador i 
+! de ((i-1)*dproc)+1 a i*dproc
+! menos el ultimo procesador que se ajusta para tener en cuenta
+! el redondeo
 
 do i=1,numproc
 
@@ -155,6 +164,8 @@ end if
 
 siz(i)=(N_end(i)-N_ini(i)+1)*3
 end do
+
+! Bucle de la integracion
 
 do i=N_ini(rank+1),N_end(rank+1)
 
