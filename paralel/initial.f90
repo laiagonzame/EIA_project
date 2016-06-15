@@ -2,6 +2,7 @@ module initial
 implicit none
 public
 !Modulo que inicializa el sistema a partir de una densidad dada
+!mediante el uso de la paralelizacion de procesadores
 contains
 
 !N -- # de particulas
@@ -16,7 +17,7 @@ contains
 
 subroutine inirandom(N,pos,vel,box,T,numproc,rank)
         ! Subrutina que inicializa las particulas en la caja de manera
-        ! aleatoria en posicion y velocidad
+        ! aleatoria en posicion y velocidad utilizando varios procesadores
 
         include 'mpif.h'
 
@@ -39,20 +40,26 @@ subroutine inirandom(N,pos,vel,box,T,numproc,rank)
         do i=1,N*rank
         call random_number(aux)
 	end do
+	
         call random_number(aux)
-        Np=floor(float(N)/float(numproc))
+        Np=floor(float(N)/float(numproc)) !Numero de particulas para cada procesador
 
-        if (rank .eq.(numproc-1)) then
+	!Definimos que particulas tiene que introducir el procesador
+        if (rank .eq.(numproc-1)) then 
           nini=rank*Np+1
           nfin=N
         else
+          !El ultimo se queda las particulas sobrantes (problema de dividir dos integers)
           nini=rank*Np+1
           nfin=(rank+1)*Np
         end if
         aux=3
+        
+        !Introducimos las particulas
         cont=nini
       do while (cont<nfin+1)
-              
+              !Tenemos dos dimensiones aleatorioas completamente, y una restringida a la seccion
+              !del procesador
  10           call random_number(aux)
               pos(1,cont)=-box/2.+(0.1+0.8*aux+float(rank))*box/float(numproc)
               call random_number(aux)
@@ -74,7 +81,7 @@ subroutine inirandom(N,pos,vel,box,T,numproc,rank)
                   dy=dy-box*nint(dy/box)
                   dz=dz-box*nint(dz/box)
                   r=sqrt(dx**2+dy**2+dz**2)
-                  if(r<1.0) then
+                  if(r<1.0) then !Condicion de no solapamiento
                   go to 10
                   end if
                   
@@ -84,15 +91,17 @@ subroutine inirandom(N,pos,vel,box,T,numproc,rank)
       
 end do
 
+!Enviamos al master la informacion de cada procesador
+
         if (rank .ne. 0) then
           call MPI_ISEND(pos(:,nini:nfin),(nfin-nini+1)*3, MPI_REAL8, 0, 1, MPI_COMM_WORLD, request, ierror)
-          !call MPI_ISEND(aux2,1,MPI_INTEGER,0,1,MPI_COMM_WORLD,request,ierror)
         endif
          
+ !Esperamos a que acaben de enviar todos
                 
         call MPI_BARRIER(MPI_COMM_WORLD, ierror) !Esperamos que todos hayan mandado
         
-        if (rank .eq. 0) then
+        if (rank .eq. 0) then !Si somos el master, tenemos que recibir y reenviar la informacion
           do i =1, numproc-1
              if (i .eq.(numproc-1)) then
                 nini=i*Np+1
@@ -101,25 +110,26 @@ end do
           	nini=i*Np+1
           	nfin=(i+1)*Np
              end if
-
+	!Recibimos la informacion correspondiente
            call MPI_RECV(pos(:,nini:nfin), (nfin-nini+1)*3, MPI_REAL8, i, 1, MPI_COMM_WORLD, stat, ierror)
-          !call MPI_RECV(aux2,1,MPI_INTEGER,i,1,MPI_COMM_WORLD,request,ierror)
          enddo
          
-         
+         !Reenviamos la matriz completa para que todos puedan trabajar con ella
          do i=1, numproc-1
           call MPI_ISEND(pos,N*3,MPI_REAL8,i,1, MPI_COMM_WORLD,request,ierror)
          enddo
 
-
         end if
+        
+        !Esperamos a que se haya enviado todo
         call MPI_BARRIER(MPI_COMM_WORLD, ierror)
 
-        
+        !Si somos diferentes al master, recibimos las matriz completa
         if (rank .ne. 0) then
            call MPI_RECV(pos,N*3, MPI_REAL8, 0, 1, MPI_COMM_WORLD, stat, ierror)
         end if
 
+	!Esperamos a que todos lleguen y ya podemos continuar con las siguientes partes del codigo
         call MPI_BARRIER(MPI_COMM_WORLD, ierror)
         
 end subroutine
