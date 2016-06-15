@@ -25,7 +25,7 @@ subroutine inicubic(N,pos,vel,box,T)
         double precision :: valx,valy,valz
         double precision, dimension(3) :: pos_cm, vel_cm
 
-
+!Definimos el espaciado entre los nodos de la red
         lat=floor(N**(1./3.)+1)
         allocate(lattice(lat,lat,lat))
         lattice = 0
@@ -34,6 +34,7 @@ subroutine inicubic(N,pos,vel,box,T)
         seed=1221
         call random_seed(seed)
 
+!Bucle que acaba cuando ya hemos introducido todas las particulas
         do while (cont<N+1)
         call random_number(valx)
         call random_number(valy)
@@ -41,8 +42,9 @@ subroutine inicubic(N,pos,vel,box,T)
         x=floor(valx*lat+1)
         y=floor(valy*lat+1)
         z=floor(valz*lat+1)
+        !Si el nodo esta vacio, podemos poner la particula
         if (lattice(x,y,z).eq.0) then
-                lattice(x,y,z)=1
+                lattice(x,y,z)=1 !Nodo lleno
                 pos(:,cont) = (/x, y, z/) * box / dfloat(lat)
                 call random_number(aux)
                 vel(1,cont)= (2.*aux-1.)*dsqrt(T)
@@ -54,6 +56,7 @@ subroutine inicubic(N,pos,vel,box,T)
         end if
         enddo
 
+        !Reescalamos sustrayendo las magnitudes del centro de masas
         pos_cm = sum(pos, dim=2) / N
         vel_cm = sum(vel, dim=2) / N
         do i = 1, N
@@ -80,7 +83,8 @@ subroutine inirandom(N,pos,vel,box,T)
         seed=1221
         call random_seed(seed)
         cont=1
-
+        
+!Bucle que acaba cuando todas las particulas se han inicializado
        do while (cont<N+1)
               
  10           call random_number(aux)
@@ -94,7 +98,7 @@ subroutine inirandom(N,pos,vel,box,T)
               vel(2,cont)=0.
               vel(3,cont)=0.
 
-              
+!Comparamos la distancia de la particula con todas las anteriores              
               do i=1,cont-1
                       
                   dx=pos(1,i)-pos(1,cont)
@@ -104,7 +108,7 @@ subroutine inirandom(N,pos,vel,box,T)
                   dy=dy-box*nint(dy/box)
                   dz=dz-box*nint(dz/box)
                   r=sqrt(dx**2+dy**2+dz**2)
-                  if(r<1.4) then
+                  if(r<1.0) then !Si esta demasiado cerca, volvemos a introducir aleatoriamente la particula
                   go to 10
                   end if
                   
