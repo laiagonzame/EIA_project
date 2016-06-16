@@ -45,6 +45,7 @@ do i = 1, numproc
    indx_ppw(i) = indx_ppw(i-1) + ppw(i)
 end do
 
+! The vector that contains all pairs interactions is computed
 counter = 1
 do i = 1, M-1
    do j = i+1, M
@@ -53,6 +54,7 @@ do i = 1, M-1
    end do
 end do
 
+! Each worker computes the force and potencial energy due to its pairs
 do i = indx_ppw(taskid), indx_ppw(taskid+1)-1
    call lj(r(:,vec_pairs(1,i)), r(:,vec_pairs(2,i)), boxlength, sigma, epsil, rc2, Fij(:,i), epot_vec(i))
 end do
@@ -108,21 +110,27 @@ double precision, dimension(3) :: rij
 double precision :: rijl, dist2, sigmar, force
 integer :: l
 
+! Initialize the distance, force and potential energy
 dist2=0d0
 F = 0d0
 epot = 0d0
 
+! Compute distance
 do l=1,3
    rijl = rj(l) - ri(l)
    rij(l) = rijl - boxlength*nint(rijl/boxlength)
    dist2 = dist2 + rij(l)*rij(l)
 enddo
+! Ensure that distance is smaller than rc
 if (dist2<rc2) then
    sigmar = (dist2**(-3d0))*(sigma**6d0)
+   ! Compute force modulus over distance
    force = 24d0*epsil*(2d0*sigmar**(2d0)-sigmar)/dist2
+   ! Update force
    do l=1,3
       F(l) = -force*rij(l)
    enddo
+   ! Update potential energy
    epot=4d0*epsil*(sigmar**(2.)-sigmar)
 endif
 
