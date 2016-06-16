@@ -1,47 +1,71 @@
+#Makefile creada per Cristina Roncero Barrero 
+#per al projecte de l'assignatura d'Eines informatiques avançades
+
 .PHONY : help
 help: Makefile
 	@sed -n 's/^##//p' $<
 
 ##compile : Compila i fa el "link"  del programa de dinamica.
 .PHONY : compile
-compile: main.o pbc.o integrator.o ini.o forces.o write_vmd.o link clean
+compile:  serie/pbc.o serie/integrator.o serie/ini.o serie/forces.o serie/write_vmd.o serie/main.olink 
 
 ##compile_time : Compila i fa el "link" per mirar els temps. 
 .PHONY : compile_time
-compile_time : main_time pbc_time integrator_time ini_time forces_time write_vmd_time link_time
+compile_time : pbc_time integrator_time ini_time forces_time write_vmd_time main_time link_time 
 
+##compile_mpi : per a compilar el programa paral·lelitzat 
+.PHONY: compile_mpi
+compile_mpi: paralel/forces-parallel.o paralel/initial.o paralel/integrator_para.o paralel/pbc_paralel.o paralel/write_vmd.o paralel/main_trajs.o link_mpi 
+
+##time : execució del codi en serie (només despres de compile_time) i crida a gprof
+.PHONY : time
+time :    
+	./van_der_waals
+	gprof van_der_waals > time.out
+	@echo "temps a time.out"
+
+
+##login : loguear al cluster para compilar
+.PHONY: login
+login:
+	@echo "caldra fer \"module load openmpi/1.4.2_intel-11.1.072 \""
+	qrsh -q cerqt2.q -pe smp 1
+
+#-----------------------------------------------------------------------------------------------#
+
+#Compilacio dels diferents moduls, individual
 #main.o : Compila el main (Sense links)
-main.o : ./serie/main_trajs.f90
-	gfortran -c ./serie/main_trajs.f90 -o main.o
+serie/main.o : ./serie/main_trajs.f90
+	gfortran -c ./serie/main_trajs.f90 -o ./serie/main.o
 
 #pbc.o : Compila el modul pbc.f90 
-pbc.o : ./serie/pbc.f90
-	gfortran -c ./serie/pbc.f90 -o pbc.o
+serie/pbc.o : ./serie/pbc.f90
+	gfortran -c ./serie/pbc.f90 -o ./serie/pbc.o
 
 #integrator.o : Compila el modul integrator.f90
-integrator.o : ./serie/integrator.f90
-	gfortran -c ./serie/integrator.f90 -o integrator.o
+serie/integrator.o : ./serie/integrator.f90
+	gfortran -c ./serie/integrator.f90 -o ./serie/integrator.o
 
 #ini.o : Compila el modul ini.f90
-ini.o : ./serie/ini.f90
-	gfortran -c ./serie/ini.f90 -o ini.o
+serie/ini.o : ./serie/ini.f90
+	gfortran -c ./serie/ini.f90 -o ./serie/ini.o
 
 #forces.o : Compila el modul forces.f90
-forces.o : ./serie/forces.f90
-	gfortran -c ./serie/forces.f90 -o forces.o
+serie/forces.o : ./serie/forces.f90
+	gfortran -c ./serie/forces.f90 -o ./serie/forces.o
 
 #write_vmd.o : Compila el modul write_vmd.f90
-write_vmd.o : ./serie/write_vmd.f90
-	gfortran -c ./serie/write_vmd.f90 -o write_vmd.o
+serie/write_vmd.o : ./serie/write_vmd.f90
+	gfortran -c ./serie/write_vmd.f90 -o ./serie/write_vmd.o
 
 #link : Link de tots els moduls i el main
 .PHONY : link
 link:
-	gfortran main.o ini.o pbc.o forces.o integrator.o write_vmd.o -o van_der_waals 
+	gfortran ./serie/main.o ./serie/ini.o ./serie/pbc.o ./serie/forces.o ./serie/integrator.o ./serie/write_vmd.o -o van_der_waals 
 	@echo "L'executable s'anomena van_der_waals"
 
 
-#Compilacio per veure els temps
+#Compilacio individual amb la  per veure els temps
 #main_time : Compilacio del main amb -pg
 .PHONY : main_temps
 main_time : 
@@ -77,15 +101,41 @@ write_vmd_time :
 link_time:
 	gfortran -pg main.o ini.o pbc.o forces.o integrator.o write_vmd.o -o van_der_waals 
 	@echo "L'executable s'anomena van_der_waals"
-	@echo "Cal executar el codi i cridar \"make time\" per tal de veure els temps"
+	@echo "Cal ejecutar el codi amb \"make time\" per tal de veure els temps"
 
-##time : execució del codi i gprof
-.PHONY : time
-time :    
-	./van_der_waals
-	gprof van_der_waals > time.out
-	@echo "temps a time.out"
- 
+
+
+#Compilacio del codi paralel, dins del cluster
+#forces-parallel.o : Compila el modul de forces paralel
+paralel/forces-parallel.o : ./paralel/forces-parallel.f90
+	mpif90 -g -c ./paralel/forces-parallel.f90 -o ./paralel/forces-parallel.o
+
+#forces-parallel.o : Compila el modul de forces paralel
+paralel/integrator_para.o : ./paralel/integrator_para.f90
+	mpif90 -g -c ./paralel/integrator_para.f90 -o ./paralel/integrator_para.o
+
+#forces-parallel.o : Compila el modul de forces paralel
+paralel/pbc_paralel.o : ./paralel/pbc_paralel.f90
+	mpif90 -g -c ./paralel/pbc_paralel.f90 -o ./paralel/pbc_paralel.o
+
+#forces-parallel.o : Compila el modul de forces paralel
+paralel/initial.o: ./paralel/initial.f90
+	mpif90 -g -c ./paralel/initial.f90 -o ./paralel/initial.o
+
+#forces-parallel.o : Compila el modul de forces paralel
+paralel/write_vmd.o : ./paralel/write_vmd.f90
+	mpif90 -g -c ./paralel/write_vmd.f90 -o ./paralel/write_vmd.o
+
+#forces-parallel.o : Compila el modul de forces paralel
+paralel/main_trajs.o : ./paralel/main_trajs.f90
+	mpif90 -g -c  ./paralel/main_trajs.f90 -o ./paralel/main_trajs.o
+#link de tots els moduls del codi paral·lelitzat. 
+.PHONY: link_mpi
+link_mpi:
+	mpif90 -g  ./paralel/initial.o ./paralel/forces-parallel.o ./paralel/pbc_paralel.o ./paralel/integrator_para.o ./paralel/main_trajs.o  ./paralel/write_vmd.o -o van_der_waals_paralel
+	@echo "executable file: van_der_waals_paralel"
+
+#---------------------------------------------------------------------------------------#
 
 #Compilacio del programa que calcula les estadistiques
 #compilacio_estadistiques: compilacio dels moduls d'estadistiques
@@ -98,28 +148,11 @@ time :
 #temperature.o :./serie/temperature.f90
 #	gfortran -c ./serie/temperature.f90 -o temperature.0
 
-#Compilacio del codi paralel, dins del cluster
 
-##login : loguear al cluster para compilar
-.PHONY: login
-login:
-	qrsh -q cerqt2.q -pe smp 1
-	@echo "cal fer \"module load\""
-
-##compile_mpi : per a compilar el programa paral·lelitzat 
-.PHONY: compile_mpi
-compile_mpi:
-
-	mpif90 -g -c forces-parallel.f90 -o forces-parallel.o
-	mpif90 -g -c integrator_para.f90 -o integrator_para.o
-	mpif90 -g -c pbc_paralel.f90 -o pbc_paralel.o
-	mpif90 -g -c initial.f90 -o ini.o
-	mpif90 -g -c write_vmd.f90 -o write_vmd.o
-	mpif90 -g -c  main_trajs.f90 -o main_trajs.o
-	mpif90 -g  ini.o forces-parallel.o pbc_paralel.o integrator_para.o main_trajs.o  write_vmd.o -o van_der_waals
-	@echo "executable file: van_der_waals"
 
 ##clean : Esborra tots els .o generats
 .PHONY : clean
 clean:
-	rm -f *.o
+	rm -f ./paralel/*.o
+	rm -f ./serie/*.o
+	rm -f *.mod
