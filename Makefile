@@ -69,37 +69,37 @@ link:
 #main_time : Compilacio del main amb -pg
 .PHONY : main_temps
 main_time : 
-	gfortran -pg -c ./serie/main_trajs.f90 -o main.o
+	gfortran -pg -c ./serie/main_trajs.f90 -o ./serie/main.o
 
 #pbc_time : Compila el modul pbc.f90 amb -pg
 .PHONY : pbc_time
 pbc_time: 
-	gfortran -pg -c ./serie/pbc.f90 -o pbc.o
+	gfortran -pg -c ./serie/pbc.f90 -o ./serie/pbc.o
 
 #integrator_time: Compila el modul integrator.f90 amb -pg
 .PHONY : integrator_time
 integrator_time : 
-	gfortran -pg -c ./serie/integrator.f90 -o integrator.o
+	gfortran -pg -c ./serie/integrator.f90 -o ./serie/integrator.o
 
 #ini.o : Compila el modul ini.f90 amb -pg
 .PHONY : ini_time
 ini_time : 
-	gfortran -pg -c ./serie/ini.f90 -o ini.o
+	gfortran -pg -c ./serie/ini.f90 -o ./serie/ini.o
 
 #forces.o : Compila el modul forces.f90 amb -pg
 .PHONY: forces_time
 forces_time : 
-	gfortran -pg -c ./serie/forces.f90 -o forces.o
+	gfortran -pg -c ./serie/forces.f90 -o ./serie/forces.o
 
 #write_vmd.o : Compila el modul write_vmd.f90 amb -pg
 .PHONY:write_vmd_time
 write_vmd_time :
-	gfortran -pg -c ./serie/write_vmd.f90 -o write_vmd.o
+	gfortran -pg -c ./serie/write_vmd.f90 -o ./serie/write_vmd.o
 
 #link_time : Link de tots els moduls que permet emprear gprof
 .PHONY : link_time
 link_time:
-	gfortran -pg main.o ini.o pbc.o forces.o integrator.o write_vmd.o -o van_der_waals 
+	gfortran -pg ./serie/main.o ./serie/ini.o ./serie/pbc.o ./serie/forces.o ./serie/integrator.o ./serie/write_vmd.o -o van_der_waals 
 	@echo "L'executable s'anomena van_der_waals"
 	@echo "Cal ejecutar el codi amb \"make time\" per tal de veure els temps"
 
@@ -150,7 +150,7 @@ link_mpi:
 
 
 
-##clean : Esborra tots els .o generats
+##clean : Esborra tots els *.o i *.mod generats
 .PHONY : clean
 clean:
 	rm -f ./paralel/*.o
