@@ -7,7 +7,7 @@ help: Makefile
 
 ##compile : Compila i fa el "link"  del programa de dinamica.
 .PHONY : compile
-compile:  serie/pbc.o serie/integrator.o serie/ini.o serie/forces.o serie/write_vmd.o serie/main.olink 
+compile:  serie/pbc.o serie/integrator.o serie/ini.o serie/forces.o serie/write_vmd.o serie/main.o link 
 
 ##compile_time : Compila i fa el "link" per mirar els temps. 
 .PHONY : compile_time
