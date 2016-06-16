@@ -27,8 +27,9 @@ public
   !
   !!! compute_radial_dist: normaliza la g(r), resultado definitivo
   !   Entrada:
-  !     numero de espacions (total_esp) y anchura (dr)
+  !     numero de espacios (total_esp) y anchura (dr)
   !     numero de acumulaciones (n_acc) Es el numero de llamadas a accumulate_radial_dis
+  !     numero de atomos (M)
   !     densidad
   !   Entrada/Salida:
   !     histograma (g)
@@ -94,11 +95,11 @@ public
   end do
   
   do i=1,numproc-1
-    start(i) = (taskid-1)*pairs_per_worker+1
-    finish(i) = taskid*pairs_per_worker
+    start(i) = (i-1)*pairs_per_worker+1
+    finish(i) = i*pairs_per_worker
   end do
   
-  finish(numproc-1) = num_pairs
+  finish(numproc-1) = num_pairs  !ultimo procesador calcula hasta la ultima pareja
     
   g(:,:) = 0
   dist_rad(:) = 0
@@ -109,7 +110,7 @@ public
        i = list_i(k)
        j = list_j(k)
 
-       Ri = r(:,i)
+       Ri(:) = r(:,i)
        Rj(:) = r(:,j)
        
        Rij(:) = Ri(:) - Rj(:)   !vector que los une
@@ -119,7 +120,7 @@ public
        distance = sqrt(Rij(1)*Rij(1) + Rij(2)*Rij(2) + Rij(3)*Rij(3))    !distancia relativa
        indice = floor(distance/dr) + 1  !posicion en histograma
        if (indice <= total_esp) then
-          g(indice,taskid) = g(indice,taskid) + 1  ! Si distance<r_max, la g(r) suma 1
+          g(indice,taskid) = g(indice,taskid) + 2  ! Si distance<r_max, la g(r) suma 1
        end if
     end do
     
@@ -151,8 +152,8 @@ public
   
   end subroutine
   
-  subroutine compute_radial_dist(total_esp, dr, n_acc, density, g)
-  integer,intent(in) :: total_esp
+  subroutine compute_radial_dist(total_esp, dr, n_acc, density, M, g)
+  integer,intent(in) :: total_esp, M
   real,intent(in) :: dr
   integer,intent(in) :: n_acc                   !numero de acumulaciones (normalizacion)
   real,intent(in) :: density                    !densidad (normalizacion)
@@ -161,7 +162,7 @@ public
   integer :: i
   
   pi = 3.14159265359
-  f = 4*pi*density*n_acc/3.  !factor de correccion y normalizacion
+  f = 4*pi*M*density*n_acc/3.  !factor de correccion y normalizacion
   
   do i=1, total_esp       !corregir con el volumen de los casquetes
     R = (i-1)*dr
@@ -182,7 +183,8 @@ public
   !   Salida:
   !     dcm: desplazamiento cuadratico medio
   
-  !!  Cómo calcular el DCM: Guardar la config a tiempo T0 en pos0. Leer posiciones en un tiempo, pos, calcular el dcm y escribir en un archivo el tiempo (T-T0) y el dcm
+  !!  Cómo calcular el DCM: Guardar la config a tiempo T0 en pos0. Leer posiciones en un tiempo, pos,
+  !   calcular el dcm y escribir en un archivo el tiempo (T-T0) y el dcm
   
   subroutine desp_cuad_medio(M,pos0,pos,dcm)
   integer,intent(in) :: M

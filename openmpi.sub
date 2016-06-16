@@ -1,0 +1,53 @@
+#!/bin/csh
+##########################################
+# SGE options and parameters
+##########################################
+# (1) Name of the job
+#$ -N van-der_waals
+# (2) Requested resources
+# Parallel Environment and number of cores
+#$ -pe omp* 8
+# Queue
+#$ -q cerqt2.q
+# Shell
+#$ -S /bin/csh
+# (3) Output files
+#$ -cwd
+#$ -o van_der_waals.out
+#$ -e van_der_waals.err
+# (4) Remove the first '#' of the following 2 lines if you want to receive an email when the job ends.
+##$ -m e 
+##$ -M  yourmail@ub.edu
+
+##########################################
+# User environment.
+##########################################
+# Load the modules needed
+
+source /etc/profile.d/modules.csh
+module load openmpi/1.4.2_intel-11.1.072
+
+##########################################
+# Copying files needed
+##########################################
+# We copy the inputs to the directory where the jobs will run
+
+setenv old `pwd`
+
+cd $TMPDIR
+pwd
+
+##########################################
+# Run the job
+##########################################
+# We run parallel program
+
+time mpirun -np 8 /home/cmm2/serie/van_der_waals  > van_der_waals.log
+
+##########################################
+# Copy the results to our home directory
+##########################################
+
+mkdir -p $old/Benchmark_para
+cp -pr $TMPDIR $old/Benchmark_para
+
