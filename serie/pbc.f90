@@ -4,7 +4,7 @@ public
 
 !Modulo para implementar condiciones periodicas de contorno
 !en la dinamica molecular
-
+!por : Cristina Roncero
 contains
 
 subroutine PBC(num_particulas,posicion,Lcaja)

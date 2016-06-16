@@ -17,6 +17,10 @@ compile_time : pbc_time integrator_time ini_time forces_time write_vmd_time main
 .PHONY: compile_mpi
 compile_mpi: paralel/forces-parallel.o paralel/initial.o paralel/integrator_para.o paralel/pbc_paralel.o paralel/write_vmd.o paralel/main_trajs.o link_mpi 
 
+##estadistiques : Ejecuta totes les estadistiques 
+.PHONY: estadistiques
+estadistiques: gr msd scala ener_temp
+
 ##time : execució del codi en serie (només despres de compile_time) i crida a gprof
 .PHONY : time
 time :    
@@ -135,20 +139,33 @@ link_mpi:
 	mpif90 -g  ./paralel/initial.o ./paralel/forces-parallel.o ./paralel/pbc_paralel.o ./paralel/integrator_para.o ./paralel/main_trajs.o  ./paralel/write_vmd.o -o van_der_waals_paralel
 	@echo "executable file: van_der_waals_paralel"
 
+
 #---------------------------------------------------------------------------------------#
 
-#Compilacio del programa que calcula les estadistiques
-#compilacio_estadistiques: compilacio dels moduls d'estadistiques
-#.PHONY : compilacio_estadistiques
-#compilacio_estadistiques: stadistics.o temperature.o
+#Compilacio i execucio dels programes que calculan les estadistiques
 
-#statistics.o :./serie/statistics.f90
-#	gfortran -c ./serie/statistics.f90 -o statistics.o
+.PHONY:  Estadistiques
+Estadistiques: gr msd 
 
-#temperature.o :./serie/temperature.f90
-#	gfortran -c ./serie/temperature.f90 -o temperature.0
+.PHONY: gr
+gr:
+	ipython ./analysis/gr.py 
+
+.PHONY: msd
+msd:
+	ipython ./analysis/msd.py 
+
+.PHONY: ener_temp
+ener_temp:
+	ipython ./analysis/ener_temp.py 
+
+.PHONY: scala
+scala::
+	ipython ./analysis/scala.py 
 
 
+
+#--------------------------------------------------------------------------------------#
 
 ##clean : Esborra tots els *.o i *.mod generats
 .PHONY : clean
