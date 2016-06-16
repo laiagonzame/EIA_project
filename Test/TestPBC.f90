@@ -5,6 +5,7 @@ use PeriodicBoundaryConditions
 implicit none
 
 !Programa per testejar que la subrutina de PBC esta ben implementada
+!feta per : Cristina Roncero
 !Atenció: si es modifica el valor del costat de la caixa aqui també s'ha 
 !de modificar a l'script ("script_vmd_TESTPBC.tcl"( si es vol visualitzar.
 

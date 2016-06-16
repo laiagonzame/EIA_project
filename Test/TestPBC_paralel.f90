@@ -4,6 +4,7 @@ implicit none
 include 'mpif.h'
 
 !Programa per testejar que la subrutina de PBC esta ben implementada
+!feta per : Cristina Roncero
 !Atenció: si es modifica el valor del costat de la caixa aqui també s'ha 
 !de modificar a l'script ("script_vmd_TESTPBC.tcl"( si es vol visualitzar.
 
@@ -32,7 +33,6 @@ allocate(posicion(3,M))
 
 t=0.
 contador=1
-!if (rank .eq. 0) then
      call Ini_test(posicion)
 
      open (unit=20, file= "test_pbc.xyz")
