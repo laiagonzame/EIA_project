@@ -114,7 +114,7 @@ frz=0.
 
 ! Calculo de la nueva posicion de las particulas usando el modulo integrator en serie y aplicacion de las PBC
 
-  call Verlet_Coord(coord,frz,vel,ts,m,L)
+  call Verlet_Coord(coord,frz,vel,Num,ts,m,L)
 
     
   call Coord_PBC(coord)
