@@ -1,0 +1,21 @@
+Intrucciones para compilar y ejecutar el codigo de dinamica molecular.
+
+En serie:
+1)Los parametros se modifican al principio del main(./serie/main_trajs.f90)
+2)compilar: make compile 
+3)ejecutar: ./van_der_waals 
+4)Para generar todos las estadisticas: make estadistiques 
+
+En serie (profiling)
+1)Los parametros se modifican al principio del main(./serie/main_trajs.f90)
+2)compilar: make compile_time
+3)ejecutar y generar el output con el profiling: make time
+
+En paralelo:
+1)Copiar las carpeta "paralel/" y "data/" , y los ficheros "Makefile" y openmpi.sub" al cluster
+2)Los parametros se modifican al principio del main(./paralel/main_trajs.f90)
+3)Compilar: make login
+	    module load module load openmpi/1.4.2_intel-11.1.072 
+            make compile_mpi
+	    logout
+4)Ejecutar: qsub openmpi.sub	
