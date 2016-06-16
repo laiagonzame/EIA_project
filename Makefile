@@ -7,17 +7,17 @@ help: Makefile
 
 ##compile : Compila i fa el "link"  del programa de dinamica.
 .PHONY : compile
-compile:  serie/pbc.o serie/integrator.o serie/ini.o serie/forces.o serie/write_vmd.o serie/main.o link 
+compile:  serie/pbc.o serie/integrator.o serie/ini.o serie/forces.o serie/write_vmd.o serie/main.o link
 
 ##compile_time : Compila i fa el "link" per mirar els temps. 
 .PHONY : compile_time
 compile_time : pbc_time integrator_time ini_time forces_time write_vmd_time main_time link_time 
 
-##compile_mpi : per a compilar el programa paral·lelitzat 
+##compile_mpi : Compila el programa paral·lelitzat 
 .PHONY: compile_mpi
 compile_mpi: paralel/forces-parallel.o paralel/initial.o paralel/integrator_para.o paralel/pbc_paralel.o paralel/write_vmd.o paralel/main_trajs.o link_mpi 
 
-##estadistiques : Ejecuta totes les estadistiques 
+##estadistiques : Executa totes les estadistiques 
 .PHONY: estadistiques
 estadistiques: gr msd scala ener_temp
 
@@ -29,7 +29,7 @@ time :
 	@echo "temps a time.out"
 
 
-##login : loguear al cluster para compilar
+##login : login al cluster per compilar
 .PHONY: login
 login:
 	@echo "caldra fer \"module load openmpi/1.4.2_intel-11.1.072 \""
@@ -109,28 +109,28 @@ link_time:
 
 
 
-#Compilacio del codi paralel, dins del cluster
-#forces-parallel.o : Compila el modul de forces paralel
+#Compilacio del codi paral·lel, dins del cluster
+#forces-parallel.o : Compila el modul de forces paral·lel
 paralel/forces-parallel.o : ./paralel/forces-parallel.f90
 	mpif90 -g -c ./paralel/forces-parallel.f90 -o ./paralel/forces-parallel.o
 
-#forces-parallel.o : Compila el modul de forces paralel
+#integrator_para.o : Compila el modul del d'integració en paral·lel
 paralel/integrator_para.o : ./paralel/integrator_para.f90
 	mpif90 -g -c ./paralel/integrator_para.f90 -o ./paralel/integrator_para.o
 
-#forces-parallel.o : Compila el modul de forces paralel
+#pbc_paralel.o : Compila el modul de PBC paral·lelitzat
 paralel/pbc_paralel.o : ./paralel/pbc_paralel.f90
 	mpif90 -g -c ./paralel/pbc_paralel.f90 -o ./paralel/pbc_paralel.o
 
-#forces-parallel.o : Compila el modul de forces paralel
+#initial.o : Compila el modul d'inicialització paral·lel
 paralel/initial.o: ./paralel/initial.f90
 	mpif90 -g -c ./paralel/initial.f90 -o ./paralel/initial.o
 
-#forces-parallel.o : Compila el modul de forces paralel
+#write_vmd.o : Compila el modul write_vmd paral·lel
 paralel/write_vmd.o : ./paralel/write_vmd.f90
 	mpif90 -g -c ./paralel/write_vmd.f90 -o ./paralel/write_vmd.o
 
-#forces-parallel.o : Compila el modul de forces paralel
+#main_trajs.o : Compila el main paral·lel
 paralel/main_trajs.o : ./paralel/main_trajs.f90
 	mpif90 -g -c  ./paralel/main_trajs.f90 -o ./paralel/main_trajs.o
 #link de tots els moduls del codi paral·lelitzat. 
@@ -142,7 +142,7 @@ link_mpi:
 
 #---------------------------------------------------------------------------------------#
 
-#Compilacio i execucio dels programes que calculan les estadistiques
+#Compilació i execució dels programes que calculan les estadistiques
 
 .PHONY:  Estadistiques
 Estadistiques: gr msd 
