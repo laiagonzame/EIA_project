@@ -42,7 +42,7 @@ pwd
 ##########################################
 # We run parallel program
 
-time mpirun -np 8 /home/cmm2/serie/van_der_waals  > van_der_waals.log
+time mpirun -np 8 /home/cmm5/van_der_waals_paralel  > van_der_waals.log
 
 ##########################################
 # Copy the results to our home directory

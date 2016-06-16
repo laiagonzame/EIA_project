@@ -18,4 +18,5 @@ En paralelo:
 	    module load module load openmpi/1.4.2_intel-11.1.072 
             make compile_mpi
 	    logout
-4)Ejecutar: qsub openmpi.sub	
+4)Ejecutar: Modificar el path en openmpi.sub (linea 45) 
+	    qsub openmpi.sub	
